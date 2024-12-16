@@ -4,25 +4,27 @@ import User from '../models/User';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import AppError from '../utils/appError';
+import mongoose from 'mongoose';
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
-    const { firstName, lastName, username, email, password} = req.body;
+    const accountId = new mongoose.Types.ObjectId().toString();
+    const { firstName, lastName, username, email, password, imageUrl} = req.body;
 
     try {
-        const user = new User({ firstName, lastName, username, email, password });
+        const user = new User({ firstName, lastName, username, email, password, accountId, imageUrl });
         await user.save();
 
         res.status(201).json({ message: 'User created successfully'});
     } catch (err) {
-       next(new AppError('Error during registration', 500));
+       next(new AppError(`Error during registration: ${err}`,  500));
     }
 };
 
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<string | any> => {
-    const { email, password } = req.body;
+    const { username, email, password } = req.body;
   
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ username });
         if (!user) {
             console.log('User not found');
             return next(new AppError('Account does not exist', 500));
@@ -42,7 +44,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict'});
         res.json({ token, refreshToken });
     } catch (err) {
-        next (new AppError('Error during login', 500));
+        next (new AppError(`Error during login: ${err}`, 500));
     }
 };
 
@@ -65,7 +67,7 @@ export const refreshToken = (req: AuthenticatedRequest, res: Response): void => 
       res.cookie('token', newToken, { httpOnly: true, secure: true, sameSite: 'strict' });
       res.json({ token: newToken });
     } catch (error) {
-      res.status(401).json({ message: 'Refresh token is not valid' });
+      res.status(401).json({ message: `Refresh token is not valid: ${error}` });
     }
   };
 

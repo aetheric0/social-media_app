@@ -38,6 +38,8 @@ const SignupForm = () => {
     try {
       const newUser = await createUser(values);
       if (newUser) {
+        const token = newUser.data.token;
+        localStorage.setItem('token', token);
         toast({title: "User created successfully!"});
         console.log("User created successfully:");
       }

@@ -29,8 +29,8 @@ export const register = async (req: Request, res: Response, next: NextFunction):
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
         const refreshToken = jwt.sign({id: user._id}, process.env.REFRESH_SECRET!, {expiresIn: '7d'});
 
-        res.cookie('token', token, {httpOnly: true, secure: true, sameSite: 'strict'});
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict'});
+        res.cookie('token', token, {httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict'});
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict'});
         res.status(201).json({ message: 'User created successfully', token, refreshToken});
     } catch (err) {
        next(new AppError(`Error during registration: ${err}`,  500));
@@ -63,8 +63,8 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
         const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
         const refreshToken = jwt.sign({id: existingUser._id}, process.env.REFRESH_SECRET!, {expiresIn: '7d'});
 
-        res.cookie('token', token, {httpOnly: true, secure: true, sameSite: 'strict'});
-        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict'});
+        res.cookie('token', token, {httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict'});
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict'});
         res.json({ token, refreshToken });
     } catch (err) {
         next (new AppError(`Error during login: ${err}`, 500));
@@ -73,7 +73,8 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
 
 export const logout = (req: Request, res: Response): void => {
     res.clearCookie('token', {httpOnly: true, secure: true, sameSite: 'strict'});
-    res.clearCookie('refreshToken', {httpOnly: true, secure: true, sameSite: true})
+    res.clearCookie('refreshToken', {httpOnly: true, secure: true, sameSite: true});
+    localStorage.removeItem('token');
     res.status(200).json({ message: 'Logged out successfully' });
 };
 

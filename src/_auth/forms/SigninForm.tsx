@@ -37,6 +37,8 @@ const onSubmit = async (values: z.infer<typeof SigninValidation>) => {
       password: values.password,
     });
     if (session) {
+      const token = session.data.token;
+      localStorage.setItem('token', token);
       toast({title: 'Logged in'})
       console.log("User logged in successfully:");
     }

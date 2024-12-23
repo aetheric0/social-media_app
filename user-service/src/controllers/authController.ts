@@ -6,39 +6,62 @@ import jwt from 'jsonwebtoken';
 import AppError from '../utils/appError';
 import mongoose from 'mongoose';
 
-export const register = async (req: Request, res: Response, next: NextFunction) => {
+export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const accountId = new mongoose.Types.ObjectId().toString();
     const { firstName, lastName, username, email, password, imageUrl} = req.body;
 
     try {
+        const existingUsername = await User.findOne({ username });
+        if (existingUsername) {
+            res.status(409).json({ message: 'Username already exists' });
+            return;
+        }
+
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail) {
+            res.status(409).json({message: 'Email already exists'});
+            return
+        }
+        
         const user = new User({ firstName, lastName, username, email, password, accountId, imageUrl });
         await user.save();
 
-        res.status(201).json({ message: 'User created successfully'});
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+        const refreshToken = jwt.sign({id: user._id}, process.env.REFRESH_SECRET!, {expiresIn: '7d'});
+
+        res.cookie('token', token, {httpOnly: true, secure: true, sameSite: 'strict'});
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict'});
+        res.status(201).json({ message: 'User created successfully', token, refreshToken});
     } catch (err) {
        next(new AppError(`Error during registration: ${err}`,  500));
     }
 };
 
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<string | any> => {
-    const { username, email, password } = req.body;
+    const { username, password } = req.body;
   
     try {
-        const user = await User.findOne({ username });
-        if (!user) {
+        const existingUser = await User.findOne({ 
+            $or: [ 
+                { username: username }, 
+                { email: username } 
+            ]
+         }); 
+         
+        if (!existingUser) {
             console.log('User not found');
-            return next(new AppError('Account does not exist', 500));
+            return next(new AppError('Account does not exist', 404));
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await bcrypt.compare(password, existingUser.password);
 
         if (!isPasswordValid) {
             console.log('Invalid password');
-            return next(new AppError('Password is Incorrect', 500));
+            return next(new AppError('Password is Incorrect', 401));
         }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
-        const refreshToken = jwt.sign({id: user._id}, process.env.REFRESH_SECRET!, {expiresIn: '7d'});
+        const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+        const refreshToken = jwt.sign({id: existingUser._id}, process.env.REFRESH_SECRET!, {expiresIn: '7d'});
 
         res.cookie('token', token, {httpOnly: true, secure: true, sameSite: 'strict'});
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'strict'});
@@ -70,6 +93,33 @@ export const refreshToken = (req: AuthenticatedRequest, res: Response): void => 
       res.status(401).json({ message: `Refresh token is not valid: ${error}` });
     }
   };
+
+  export const getCurrentUser = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        if (!req.user || (typeof req.user !== 'string' && !req.user.id)) {
+            res.status(401).json({ message: 'Unauthorized' });
+            return;
+        }
+        
+        const userId = typeof req.user === 'string' ? req.user: req.user.id;
+        const user = await User.findById(userId);
+
+        if(!user) {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+        res.status(200).json({
+            id: user.accountId,
+            name: user.firstName,
+            username: user.username,
+            email: user.email,
+            imageUrl: user.imageUrl,
+            bio: user.bio
+        });
+    } catch (error) {
+        next (new AppError(`Could not retrieve current user: ${error}`, 500));
+    }
+  }
 
 export const protectedHandler = (req: AuthenticatedRequest, res: Response): void => {
     res.status(200).json({ message: 'Protected route accessed', user: req.user});

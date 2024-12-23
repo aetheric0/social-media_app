@@ -81,7 +81,10 @@ module.exports = {
   			'465': '465px'
   		},
   		fontFamily: {
-  			inter: ['Inter', 'sans-serif']
+  			inter: [
+  				'Inter',
+  				'sans-serif'
+  			]
   		},
   		keyframes: {
   			'accordion-down': {

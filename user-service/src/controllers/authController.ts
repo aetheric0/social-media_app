@@ -72,10 +72,10 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
 };
 
 export const logout = (req: AuthenticatedRequest, res: Response): void => {
-    console.log("We are here");
-    res.clearCookie('token', {httpOnly: true, secure: true, sameSite: 'strict'});
-    res.clearCookie('refreshToken', {httpOnly: true, secure: true, sameSite: true});
-    localStorage.removeItem('token');
+    console.log("Clearing cookies");
+    res.clearCookie('token', {httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict'});
+    res.clearCookie('refreshToken', {httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: true});
+    console.log("Cookies cleared");
     res.status(200).json({ message: 'Logged out successfully' });
 };
 

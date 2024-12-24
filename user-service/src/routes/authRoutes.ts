@@ -10,7 +10,7 @@ router.post('/login', login);
 router.get('/protected', authMiddleware, protectedHandler);
 router.post('/refresh-token', refreshToken);
 router.post('/create-post', authMiddleware, CreatePost);
-router.get('/logout', authMiddleware, logout);
+router.post('/logout', authMiddleware, logout);
 router.get('/users/user', authMiddleware, getCurrentUser);
 
 export default router;

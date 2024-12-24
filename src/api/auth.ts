@@ -39,12 +39,14 @@ export async function getCurrentUser() {
 
 export async function signOutAccount() {
   try {
-    const session = await axios.get(
-      "http://localhost:5000/auth/api/logout", 
+    const session = await axios.post(
+      "http://localhost:5000/api/auth/logout",
+      {}, 
       {
         withCredentials: true
       }
     );
+    localStorage.removeItem('token');
 
     return session;
 

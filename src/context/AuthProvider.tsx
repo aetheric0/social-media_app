@@ -5,7 +5,8 @@ import { IContextType, IUser } from '../lib/types';
 
 export const INITIAL_USER: IUser = {
   id: '',
-  name: '',
+  firstName: '',
+  lastName: '',
   username: '',
   email: '',
   imageUrl: '',
@@ -35,7 +36,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (currentAccount) {
         setUser({
           id: currentAccount.id,
-          name: currentAccount.firstName,
+          firstName: currentAccount.firstName,
+          lastName: currentAccount.lastName,
           username: currentAccount.username,
           email: currentAccount.email,
           imageUrl: currentAccount.imageUrl,

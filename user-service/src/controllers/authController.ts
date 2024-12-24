@@ -71,7 +71,8 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
     }
 };
 
-export const logout = (req: Request, res: Response): void => {
+export const logout = (req: AuthenticatedRequest, res: Response): void => {
+    console.log("We are here");
     res.clearCookie('token', {httpOnly: true, secure: true, sameSite: 'strict'});
     res.clearCookie('refreshToken', {httpOnly: true, secure: true, sameSite: true});
     localStorage.removeItem('token');

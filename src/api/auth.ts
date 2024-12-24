@@ -36,3 +36,19 @@ export async function getCurrentUser() {
     console.log(error);
   }
 }
+
+export async function signOutAccount() {
+  try {
+    const session = await axios.get(
+      "http://localhost:5000/auth/api/logout", 
+      {
+        withCredentials: true
+      }
+    );
+
+    return session;
+
+  } catch(error) {
+    console.log(error);
+  }
+}

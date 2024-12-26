@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getCurrentUser } from '../api/auth';
 import { IContextType, IUser } from '../lib/types';
 
@@ -29,6 +29,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const checkAuthUser = async (): Promise<boolean> => {
     try {
@@ -57,7 +58,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
       const token = localStorage.getItem('token');
-      if (!token) navigate('/sign-in');
+      if (!token && location.pathname !== '/sign-up') navigate('/sign-in');
       checkAuthUser();
   }, [navigate]);
 

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getCurrentUser } from '../api/auth';
 import { IContextType, IUser } from '../lib/types';
 
@@ -29,9 +29,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const checkAuthUser = async (): Promise<boolean> => {
     try {
+      setIsLoading(true); // Set loading to true before API call
       const currentAccount = await getCurrentUser();
       if (currentAccount) {
         setUser({
@@ -47,19 +49,22 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return true;
       }
     } catch (error) {
-      console.log(error);
-      setIsAuthenticated(false);
+      console.error("Authentication error:", error); // More descriptive error message
+      setIsAuthenticated(false); // Ensure isAuthenticated is false on error
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Set loading to false regardless of success/failure
     }
     return false;
   };
 
   useEffect(() => {
-      const token = localStorage.getItem('token');
-      if (!token) navigate('/sign-in');
+    const token = localStorage.getItem('token');
+    if (!token && location.pathname !== '/sign-up') {
+      navigate('/sign-in');
+    } else if (token){
       checkAuthUser();
-  }, [navigate]);
+    }
+  }, [navigate, location]); // Add location to the dependency array
 
   const value = {
     user,
@@ -70,7 +75,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkAuthUser,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;

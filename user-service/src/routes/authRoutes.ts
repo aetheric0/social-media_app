@@ -1,15 +1,18 @@
-import { Router } from 'express';
-import { register, login, protectedHandler, refreshToken, logout, getCurrentUser } from '../controllers/authController'
+import express from 'express';
+import { register, login, protectedHandler, refreshToken, logout, getCurrentUser } from '../controllers/authController';
 import { authMiddleware } from '../middlewares/authMiddleware';
-import { CreatePost } from '../controllers/userController';
+import { createPost } from '../controllers/userController';
+import multer from 'multer';
 
-const router = Router();
+const router = express.Router();
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
+router.post('/createPost', authMiddleware, upload.array('file'), createPost);
 router.post('/register', register);
 router.post('/login', login);
 router.get('/protected', authMiddleware, protectedHandler);
 router.post('/refresh-token', refreshToken);
-router.post('/create-post', authMiddleware, CreatePost);
 router.post('/logout', authMiddleware, logout);
 router.get('/users/user', authMiddleware, getCurrentUser);
 

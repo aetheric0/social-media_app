@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { INewUser } from '../lib/types';
+import { INewUser, INewPost } from '../lib/types';
 
 export const createUser = async (user: INewUser) => {
   const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
@@ -54,3 +54,43 @@ export async function signOutAccount() {
     console.log(error);
   }
 }
+
+export const createPost = async (postData: INewPost) => {
+
+    const formData = new FormData();
+
+    if (postData.file && postData.file.length > 0) {
+        postData.file.forEach((file, index) => {
+            formData.append(`file[${index}]`, file);
+        });
+    }
+
+    if (postData.caption) {
+        formData.append('caption', postData.caption);
+    }
+
+    if (postData.location) {
+        formData.append('location', postData.location);
+    }
+
+    if (postData.tags) {
+        postData.tags.forEach((tag) => formData.append('tags', tag)); // Append each tag individually
+    }
+
+    if (postData.creator) {
+        formData.append('creator', postData.creator);
+    }
+ 
+    try {
+        const response = await axios.post('http://localhost:5000/api/auth/createPost', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            withCredentials: true,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error creating post in API:", error);
+        throw error;
+    }
+};

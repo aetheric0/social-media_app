@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { ExtendedJwtPayload } from '../../@types/express/index'
 
 export interface AuthenticatedRequest extends Request {
-    user?: string | ExtendedJwtPayload;
+    user?: ExtendedJwtPayload;
 }
 
 export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {

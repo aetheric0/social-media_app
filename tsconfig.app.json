@@ -1,5 +1,16 @@
 {
   "compilerOptions": {
+    "baseUrl": "./src", // The base directory for resolving non-relative module imports
+    "paths": {
+      "@/_root/*": ["./pages/*"], // Alias for @/_root/pages
+      "@/components/*": ["./components/*"], // Example alias for components
+      "@/assets/*": ["./assets/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/api/*": ["./api/*"],
+      "@/constants/*": ["./constants/*"],
+      "@/hooks/*": ["./hooks/*"],
+      "@/styles/*": ["./styles/*"]
+    },
     "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],

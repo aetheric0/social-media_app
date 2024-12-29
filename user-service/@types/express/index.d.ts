@@ -7,7 +7,7 @@ interface ExtendedJwtPayload extends JwtPayload {
 declare global {
     namespace Express {
         interface Request {
-            user?: string | ExtendedJwtPayload;
+            user?: ExtendedJwtPayload;
         }
     }
 }

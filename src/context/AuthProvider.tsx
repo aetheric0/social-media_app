@@ -33,6 +33,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const checkAuthUser = async (): Promise<boolean> => {
     try {
+      setIsLoading(true); // Set loading to true before API call
       const currentAccount = await getCurrentUser();
       if (currentAccount) {
         setUser({
@@ -48,10 +49,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return true;
       }
     } catch (error) {
-      console.log(error);
-      setIsAuthenticated(false);
+      console.error("Authentication error:", error); // More descriptive error message
+      setIsAuthenticated(false); // Ensure isAuthenticated is false on error
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Set loading to false regardless of success/failure
     }
     return false;
   };
@@ -59,8 +60,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
       const token = localStorage.getItem('token');
       if (!token && location.pathname !== '/sign-up') navigate('/sign-in');
+
       checkAuthUser();
-  }, [navigate]);
+    }, [navigate, location]); // Add location to the dependency array
 
   const value = {
     user,
@@ -71,7 +73,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkAuthUser,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;

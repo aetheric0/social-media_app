@@ -5,6 +5,16 @@ export type INavLink = {
     route: string;
     label: string;
   };
+
+  export type IUser = {
+    id: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+    email: string;
+    imageUrl: string;
+    bio: string;
+  };
   
   export type IUpdateUser = {
     userId: string;
@@ -26,17 +36,17 @@ export type INavLink = {
 };
 
 export type IPost = {
-  _id: string;
+  id: string;
   caption: string;
   location?: string;
   file: File[]; // Make file optional
   tags?: string[];
   imageUrl: string; 
   imageId: string;
-  creator: string;
+  creator: IUser;
+  createdAt: string;
+  updatedAt: string;
 };
-
-
   
   export type IUpdatePost = {
     postId: string;
@@ -48,15 +58,6 @@ export type IPost = {
     tags?: string;
   };
   
-  export type IUser = {
-    id: string;
-    firstName: string;
-    lastName: string;
-    username: string;
-    email: string;
-    imageUrl: string;
-    bio: string;
-  };
 
   export type IContextType = {
     user: IUser;

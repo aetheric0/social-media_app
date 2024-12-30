@@ -4,11 +4,12 @@ interface IPost extends Document {
     creator: Schema.Types.ObjectId;
     caption: string;
     likes: Schema.Types.ObjectId[];
-    location: string,
-    tags: string[],
-    imageUrl: string,
-    imageId: string,
-    date: Date;
+    location: string;
+    tags: string[];
+    imageUrl: string;
+    imageId: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 const postSchema = new Schema<IPost>({
@@ -19,7 +20,8 @@ const postSchema = new Schema<IPost>({
     tags: {type: [String]},
     imageUrl: [{type: String, required: true}],
     imageId: [{type: String, required: true}],
-    date: {type: Date, default: Date.now},
+}, {
+    timestamps: true,
 })
 
 const Posts = model<IPost>('Posts', postSchema);

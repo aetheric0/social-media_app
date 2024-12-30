@@ -80,11 +80,17 @@ export const getRecentPosts = async (req: AuthenticatedRequest, res: Response, n
       const posts = await Posts.find()
       .sort({date: -1}) // Sort by date in desc order
       .limit(20)
-      .populate('creator', 'username imageUrl');
+      .populate('creator', 'username firstName imageUrl');
+
+      const formattedPosts = posts.map(post => ({
+        ...post,
+        createdAt: post.createdAt?.toLocaleString('en-US', { timeZone: 'Africa/Nairobi'}),
+        updatedAt: post.updatedAt?.toLocaleString('en-US', { timeZone: 'Africa/Nairobi'})
+      }))
     
     res.status(200).json({
       status: 'success',
-      results: posts.length,
+      results: formattedPosts.length,
       posts,
     });
   } catch(error) {

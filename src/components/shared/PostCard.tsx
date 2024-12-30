@@ -1,5 +1,6 @@
 import { IPost } from "@/lib/types"
 import { multiFormatDateString } from "@/lib/utils";
+import { useUserContext } from "../../context/AuthProvider";
 import { Link } from "react-router-dom";
 
 type PostCardProps = {
@@ -7,12 +8,15 @@ type PostCardProps = {
 }
 
 const PostCard = ({ post }: PostCardProps ) => {
-  console.log("FirstName", post.creator.firstName)
+  const { user } = useUserContext();
+  console.log("user id: ", user._id);
+  console.log("creator id: ", post.creator._id);
+  if (!post.creator) return;
   return (
     <div className="post-card">
-        <div className="flex-betweeen">
+        <div className="flex-between">
             <div className="flex items-center gap-3">
-                <Link to={`/profile/${post.creator.id}`}>
+                <Link to={`/profile/${post.creator._id}`}>
                   <img 
                     src={post?.creator?.imageUrl || 'assets/icons/profile-placeholder.svg'}
                     alt="creator"
@@ -37,7 +41,32 @@ const PostCard = ({ post }: PostCardProps ) => {
                   </div>
                 </div>
             </div>
+            <Link to={`/update-post/${post._id}`}
+              className={`${user._id !== post.creator._id && "hidden"}`}
+            >
+              <img src="/assets/icons/edit.svg" 
+              alt="edit" 
+              width={20} 
+              height={20} />
+            </Link>
         </div>
+        <Link to={`/posts/${post._id}`}>
+          <div className="small-medium lg:base-medium py-5">
+            <p>{post.caption}</p>
+            <ul className="flex gap-1 mt-2">
+              {post.tags?.map((tag: string) => (
+                <li key={tag} className="text-light-3">
+                  #{tag}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <img 
+            src={post.imageUrl || "/assets/icons/profile-placeholder.svg"} 
+            className="post-card_img"
+            alt="post image"
+          />
+        </Link>
     </div>
   )
 }

@@ -4,7 +4,7 @@ import { getCurrentUser } from '../api/auth';
 import { IContextType, IUser } from '../lib/types';
 
 export const INITIAL_USER: IUser = {
-  id: '',
+  _id: '',
   firstName: '',
   lastName: '',
   username: '',
@@ -37,7 +37,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const currentAccount = await getCurrentUser();
       if (currentAccount) {
         setUser({
-          id: currentAccount.id,
+          _id: currentAccount._id,
           firstName: currentAccount.firstName,
           lastName: currentAccount.lastName,
           username: currentAccount.username,

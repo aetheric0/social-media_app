@@ -7,7 +7,7 @@ export type INavLink = {
   };
 
   export type IUser = {
-    id: string;
+    _id: string;
     firstName: string;
     lastName: string;
     username: string;
@@ -36,7 +36,7 @@ export type INavLink = {
 };
 
 export type IPost = {
-  id: string;
+  _id: string;
   caption: string;
   location?: string;
   file: File[]; // Make file optional

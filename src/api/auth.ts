@@ -98,7 +98,7 @@ export const createPost = async (postData: INewPost) => {
 
 export async function getRecentPosts() {
   const posts = await axios.get(
-    'http://localhost:5000/user/api/get-recent-posts', 
+    'http://localhost:5000/api/user/get-recent-posts', 
     { withCredentials: true}
   );
 

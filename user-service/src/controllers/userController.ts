@@ -85,9 +85,7 @@ export const getRecentPosts = async (req: AuthenticatedRequest, res: Response, n
     res.status(200).json({
       status: 'success',
       results: posts.length,
-      data: {
-        posts
-      }
+      posts,
     });
   } catch(error) {
     next(new AppError(`Error retrieving posts: ${error}`, 500));

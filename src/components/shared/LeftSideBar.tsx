@@ -1,7 +1,7 @@
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 
-import { INavLink } from "@/types";
-import { sidebarLinks } from "@/constants";
+import { INavLink } from "../../lib/types";
+import { sidebarLinks } from "../../constants";
 import { Loader } from "@/components/shared/Loader";
 import { Button } from "../ui/button";
 import { useSignOutAccount } from "../../hooks/useAuthMutations";
@@ -23,7 +23,7 @@ const LeftSideBar = () => {
       <div className="flex flex-col gap-11">
         <Link to="/" className="flex gap-3 items-center">
           <img
-            src="/assets/images/logo.svg"
+            src="/assets/images/logo5.png"
             alt="logo"
             width={170}
             height={36}
@@ -63,7 +63,7 @@ const LeftSideBar = () => {
                     src={link.imgURL}
                     alt={link.label}
                     className={`group-hover:invert-white ${
-                      isActive && "bg-primary-500"
+                      isActive && "invert-white"
                     }`}
                   />
                   {link.label}

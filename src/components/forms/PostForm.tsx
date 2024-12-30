@@ -3,7 +3,7 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { INewPost } from '../lib/types';
+import { INewPost } from '../../lib/types';
 import { useNavigate } from "react-router-dom";
 import { PostValidation } from "@/lib/validation/index";
 import { Button } from "@/components/ui/button";
@@ -20,9 +20,10 @@ import { Textarea } from "@/components/ui/textarea";
 import FileUploader from "@/components/shared/FileUploader";
 import { useCreatePost } from "@/hooks/useAuthMutations";
 import { useUserContext } from "../../context/AuthProvider";
+import Loader from "../shared/Loader";
 
 type PostFormProps = {
-  post?: Models.Document;
+  post?: INewPost;
 };
 
 const PostForm = ({ post }: PostFormProps) => {
@@ -35,9 +36,9 @@ const PostForm = ({ post }: PostFormProps) => {
     resolver: zodResolver(PostValidation),
     defaultValues: {
       caption: post ? post.caption : "",
-      file: "",
+      file: [],
       location: post ? post.location : "",
-      tags: post ? post.tags.join(",") : "",
+      tags: (post && post.tags) ? post.tags.join(",") : "",
     },
   });
 
@@ -51,14 +52,12 @@ const PostForm = ({ post }: PostFormProps) => {
         throw new Error("No files uploaded");
       }
   
-      const imageUrl = uploadedFiles[0] ? URL.createObjectURL(uploadedFiles[0]) : "";
-  
       const newPost: INewPost = {
         caption: values.caption,
         location: values.location,
-        tags: tagsArray,
-        file: uploadedFiles.length > 0 ? uploadedFiles[0].name : "", 
-        imageUrl,
+        tags: JSON.parse(tagsArray),
+        file: uploadedFiles.length > 0 ? uploadedFiles : [], 
+        imageUrl: "",
         imageId: `${uploadedFiles[0].name}-${Date.now()}`,
         creator: user?.id || '',
       };
@@ -74,6 +73,7 @@ const PostForm = ({ post }: PostFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
+        encType="multipart/form-data"
         className="flex flex-col justify-center gap-9 w-full max-w-5xl"
       >
         <FormField

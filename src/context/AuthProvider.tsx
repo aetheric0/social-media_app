@@ -62,7 +62,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!token && location.pathname !== '/sign-up') navigate('/sign-in');
 
       checkAuthUser();
-    }, [navigate, location]); // Add location to the dependency array
+    }, []); // Add location to the dependency array
 
   const value = {
     user,

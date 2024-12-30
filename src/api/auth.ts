@@ -60,8 +60,8 @@ export const createPost = async (postData: INewPost) => {
     const formData = new FormData();
 
     if (postData.file && postData.file.length > 0) {
-        postData.file.forEach((file, index) => {
-            formData.append(`file[${index}]`, file);
+        postData.file.forEach((file) => {
+            formData.append('file', file);
         });
     }
 
@@ -82,12 +82,13 @@ export const createPost = async (postData: INewPost) => {
     }
  
     try {
-        const response = await axios.post('http://localhost:5000/api/auth/createPost', formData, {
+        const response = await axios.post('http://localhost:5000/api/user/create-post', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
             withCredentials: true,
         });
+        console.log('Create Post Response:', response.data);
         return response.data;
     } catch (error) {
         console.error("Error creating post in API:", error);

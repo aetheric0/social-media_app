@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 export type INavLink = {
     imgURL: string;
     route: string;
@@ -35,11 +37,21 @@ export type INavLink = {
   
   export type IUser = {
     id: string;
-    name: string;
+    firstName: string;
+    lastName: string;
     username: string;
     email: string;
     imageUrl: string;
     bio: string;
+  };
+
+  export type IContextType = {
+    user: IUser;
+    isLoading: boolean;
+    isAuthenticated: boolean;
+    setUser: Dispatch<SetStateAction<IUser>>;
+    setIsAuthenticated: Dispatch<SetStateAction<boolean>>;
+    checkAuthUser:  () => Promise<boolean>;
   };
   
   export type INewUser = {

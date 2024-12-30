@@ -74,3 +74,22 @@ export const  createPost = async (req: AuthenticatedRequest, res: Response, next
     }
   });
 };
+
+export const getRecentPosts = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+      const posts = await Posts.find()
+      .sort({date: -1}) // Sort by date in desc order
+      .limit(20)
+      .populate('creator', 'username imageUrl');
+    
+    res.status(200).json({
+      status: 'success',
+      results: posts.length,
+      data: {
+        posts
+      }
+    });
+  } catch(error) {
+    next(new AppError(`Error retrieving posts: ${error}`, 500));
+  }
+};

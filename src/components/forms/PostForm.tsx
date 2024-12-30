@@ -55,7 +55,7 @@ const PostForm = ({ post }: PostFormProps) => {
       const newPost: INewPost = {
         caption: values.caption,
         location: values.location,
-        tags: JSON.parse(tagsArray),
+        tags: tagsArray,
         file: uploadedFiles.length > 0 ? uploadedFiles : [], 
         imageUrl: "",
         imageId: `${uploadedFiles[0].name}-${Date.now()}`,

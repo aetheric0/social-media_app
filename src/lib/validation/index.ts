@@ -16,7 +16,6 @@ export const SignupValidation = z.object({
 
     export const PostValidation = z.object({
       caption: z.string().min(5, {message: "Minimum 5 characters."}).max(2200, { message: "Maximum 2,200 characters"}),
-      file: z.custom<File[]>(),
-      location: z.string().min(1, { message: "This field is required" }).max(1000, { message: "Maximum 100 characters."}),
-      tags: z.string(),
+      location: z.string().optional(),
+      tags: z.string().optional(),
     });

@@ -1,44 +1,52 @@
+// src/controllers/userControllers.ts
 import { Request, Response, NextFunction } from 'express';
-import Posts from "../models/Posts";
+import { v2 as cloudinary } from 'cloudinary';
+import Posts from '../models/Posts';
 import { AuthenticatedRequest } from '../middlewares/authMiddleware';
-import multer from 'multer';
 import AppError from '../utils/appError';
+import * as fs from 'fs';
 
-const storage = multer.memoryStorage(); // Using memory storage for simplicity, configure as needed
-const upload = multer({ storage: storage });
+// Define the MulterRequest type (in the controller file or a separate types file)
+type MulterRequest = AuthenticatedRequest & { file: Express.Multer.File };
 
 export const createPost = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { caption, location, tags, imageUrl, imageId } = req.body;
-
-    if (!req.user || (typeof req.user !== 'string' && !req.user.id)) {
-        res.status(401).json({ message: 'Unauthorized' });
-        return;
-    }
-
-    const files = req.files as Express.Multer.File[]; // Ensure req.files is typed correctly
-    if (!files || files.length === 0) {
-      res.status(400).json({ message: 'No file uploaded' });
+    console.log('CreatePost function started')
+    if (!req.user) {
+      res.status(401).json({ message: 'Unauthorized' });
       return;
     }
+    // Type assertion using the alias
+    const file = (req as MulterRequest).file;
+    if (!file) {
+      return next(new AppError('No file uploaded', 400));
+    }
+    const userId = req.user.id;
+    const { caption, location, tags } = req.body;
+    console.log("Tags from request body:", tags);
+    const cloudinaryResponse = await cloudinary.uploader.upload(file.path, {
+      timeout: 60000,
+    });
+    console.log("Cloudinary Response:", cloudinaryResponse);
 
-    const file = files[0];
-    const userId = req.user.id
+    fs.unlinkSync(file.path);
+    console.log(`Tags from request body: ${tags}`);
+  
     const newPost = new Posts({
       creator: userId,
       caption,
-      likes: [],
       location,
-      tags: JSON.parse(tags),
-      imageUrl,
-      imageId,
+      tags, // Parse tags to an array
+      imageUrl: cloudinaryResponse.secure_url,
+      imageId: cloudinaryResponse.public_id,
       date: new Date(),
     });
-
-    const savedPost = await newPost.save();
-    res.status(201).json(savedPost);
+    console.log("New Post Object:", newPost);
+    console.log('Saving new post to database')
+    const savePost = await newPost.save();
+    res.status(201).json(savePost);
   } catch (error) {
-    console.error('Error creating post:', error);
-    next(new AppError(`Could not create post: ${error}`, 500));
+    console.error("Error in createPost:", error);
+    next(new AppError('Failed to create post', 500));
   }
 };

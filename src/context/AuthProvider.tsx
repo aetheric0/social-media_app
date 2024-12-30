@@ -64,7 +64,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } else if (token){
       checkAuthUser();
     }
-  }, [navigate, location]); // Add location to the dependency array
+  }, [navigate, location.pathname]); // Add location to the dependency array
 
   const value = {
     user,

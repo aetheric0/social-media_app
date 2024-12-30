@@ -88,7 +88,7 @@ export const refreshToken = (req: AuthenticatedRequest, res: Response): void => 
   
     try {
       const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET!) as { id: string };
-      const newToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+      const newToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET!, { expiresIn: '2h' });
       res.cookie('token', newToken, { httpOnly: true, secure: true, sameSite: 'strict' });
       res.json({ token: newToken });
     } catch (error) {

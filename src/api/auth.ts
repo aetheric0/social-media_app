@@ -59,11 +59,10 @@ export const createPost = async (postData: INewPost) => {
 
     const formData = new FormData();
 
-    if (postData.file && postData.file.length > 0) {
-        postData.file.forEach((file, index) => {
-            formData.append(`file[${index}]`, file);
-        });
-    }
+    
+    if (postData.file) { // Check if a file is present
+      formData.append('file', postData.file); 
+  }
 
     if (postData.caption) {
         formData.append('caption', postData.caption);
@@ -74,7 +73,7 @@ export const createPost = async (postData: INewPost) => {
     }
 
     if (postData.tags) {
-        postData.tags.forEach((tag) => formData.append('tags', tag)); // Append each tag individually
+        postData.tags.forEach((tag) => formData.append('tags', tag)); 
     }
 
     if (postData.creator) {

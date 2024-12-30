@@ -17,8 +17,8 @@ const postSchema = new Schema<IPost>({
     likes: {type: Schema.Types.ObjectId, ref: 'User'},
     location: {type: String},
     tags: {type: [String]},
-    imageUrl: [{type: String, required: true}],
-    imageId: [{type: String, required: true}],
+    imageUrl: {type: String, required: true},
+    imageId: {type: String, required: true},
     date: {type: Date, default: Date.now},
 })
 

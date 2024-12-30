@@ -15,11 +15,9 @@ export type INavLink = {
   
   export type INewPost = {
     caption: string;
-    location?: string;
-    file: File[]; // Make file optional
+    location?: string; // Make file optional
     tags?: string[];
-    imageUrl: string; 
-    imageId: string;
+    file: File | null;
     creator: string;
 };
   
@@ -49,3 +47,13 @@ export type INavLink = {
     username: string;
     password: string;
   };
+
+  export interface PostData { // This is what the frontend deals with
+    creator: string;
+    caption: string;
+    location?: string;
+    tags?: string[];
+    imageUrl: string[];
+    imageId: string[];
+    date?: Date;
+}

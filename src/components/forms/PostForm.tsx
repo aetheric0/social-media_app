@@ -1,11 +1,10 @@
-// src/components/PostForm.tsx
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { INewPost } from '../lib/types';
+import { PostData, INewPost } from "@/lib/types"; // Make sure this interface is correct
 import { useNavigate } from "react-router-dom";
-import { PostValidation } from "@/lib/validation/index";
+import { PostValidation } from "@/lib/validation/index"; // Import your validation schema
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -20,49 +19,55 @@ import { Textarea } from "@/components/ui/textarea";
 import FileUploader from "@/components/shared/FileUploader";
 import { useCreatePost } from "@/hooks/useAuthMutations";
 import { useUserContext } from "../../context/AuthProvider";
+import Loader from "@/components/shared/Loader";
 
 type PostFormProps = {
-  post?: Models.Document;
+  post?: PostData; // Correct type for Mongoose
 };
 
 const PostForm = ({ post }: PostFormProps) => {
-  const { mutate: createPost, isLoading: isCreatingPost } = useCreatePost();
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const { mutate: createPost, isPending: isCreatingPost } = useCreatePost();
   const { user } = useUserContext();
   const navigate = useNavigate();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof PostValidation>>({
     resolver: zodResolver(PostValidation),
     defaultValues: {
       caption: post ? post.caption : "",
-      file: "",
       location: post ? post.location : "",
-      tags: post ? post.tags.join(",") : "",
+      tags: post?.tags?.join(",") || "",
     },
   });
 
+  const handleFileChange = (file: File | null) => {
+    setSelectedFile(file);
+    if (file) {
+      setPreviewUrl(URL.createObjectURL(file));
+    } else {
+      setPreviewUrl(null);
+    }
+  };
+
   const onSubmit = async (values: z.infer<typeof PostValidation>) => {
     try {
-      const tagsArray = values.tags
-        ? values.tags.split(",").map((tag) => tag.trim())
-        : [];
-      
-      if (uploadedFiles.length === 0) {
-        throw new Error("No files uploaded");
+      const tagsArray = values.tags // No need for ternary here
+        .split(",")
+        .map((tag) => tag.trim());
+
+      if (!selectedFile) {
+        throw new Error("No file uploaded");
       }
-  
-      const imageUrl = uploadedFiles[0] ? URL.createObjectURL(uploadedFiles[0]) : "";
-  
+
       const newPost: INewPost = {
         caption: values.caption,
         location: values.location,
         tags: tagsArray,
-        file: uploadedFiles.length > 0 ? uploadedFiles[0].name : "", 
-        imageUrl,
-        imageId: `${uploadedFiles[0].name}-${Date.now()}`,
-        creator: user?.id || '',
+        file: selectedFile, // Send the File object
+        creator: user?.id || "",
       };
-  
+
       await createPost(newPost);
       navigate("/");
     } catch (error) {
@@ -92,23 +97,25 @@ const PostForm = ({ post }: PostFormProps) => {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="file"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="shad-form_label">Add Photos</FormLabel>
-              <FormControl>
-                <FileUploader
-                  fieldChange={field.onChange}
-                  mediaUrl={post?.imageUrl}
-                  onFilesChange={setUploadedFiles} 
-                />
-              </FormControl>
-              <FormMessage className="shad-form_message" />
-            </FormItem>
+
+        <FormItem>
+          {" "}
+          {/* Only FormItem, FormLabel, FormControl */}
+          <FormLabel className="shad-form_label">Add Photos</FormLabel>
+          <FormControl>
+            <FileUploader onFileChange={handleFileChange} />
+          </FormControl>
+          {previewUrl && (
+            <img
+              src={previewUrl}
+              alt="Preview"
+              style={{ maxWidth: "200px", marginTop: "10px" }}
+            />
           )}
-        />
+          <FormMessage className="shad-form_message" />
+        </FormItem>
+
+        {/* ... other form fields (location, tags) */}
         <FormField
           control={form.control}
           name="location"
@@ -142,6 +149,7 @@ const PostForm = ({ post }: PostFormProps) => {
             </FormItem>
           )}
         />
+
         <div className="flex gap-4 items-center justify-end">
           <Button type="button" className="shad-button_dark_4">
             Cancel

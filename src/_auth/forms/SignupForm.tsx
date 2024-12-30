@@ -11,7 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Form } from "../../components/ui/form";
 import { useToast } from '../../hooks/use-toast';
 import { ToastAction } from "../../components/ui/toast";
-import { useCreateAccount } from "../../hooks/useAuthMutations";
+import { useCreateAccount } from "../../hooks/queriesAndMutations";
 import { useUserContext } from "../../context/AuthProvider";
 
 

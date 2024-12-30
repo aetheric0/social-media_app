@@ -2,9 +2,9 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import { INavLink } from "../../lib/types";
 import { sidebarLinks } from "../../constants";
-import { Loader } from "@/components/shared/Loader";
+// import { Loader } from "@/components/shared/Loader";
 import { Button } from "../ui/button";
-import { useSignOutAccount } from "../../hooks/useAuthMutations";
+import { useSignOutAccount } from "../../hooks/queriesAndMutations";
 import { useEffect } from "react";
 import { useUserContext } from "../../context/AuthProvider";
 

@@ -95,3 +95,14 @@ export const createPost = async (postData: INewPost) => {
         throw error;
     }
 };
+
+export async function getRecentPosts() {
+  const posts = await axios.get(
+    'http://localhost:5000/user/api/get-recent-posts', 
+    { withCredentials: true}
+  );
+
+  if (!posts) throw Error;
+
+  return posts
+}

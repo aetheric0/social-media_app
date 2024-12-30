@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import FileUploader from "@/components/shared/FileUploader";
-import { useCreatePost } from "@/hooks/useAuthMutations";
+import { useCreatePost } from "@/hooks/queriesAndMutations";
 import { useUserContext } from "../../context/AuthProvider";
 import Loader from "../shared/Loader";
 

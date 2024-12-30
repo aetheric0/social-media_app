@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
-import { useSignOutAccount } from '../../hooks/useAuthMutations';
+import { useSignOutAccount } from '../../hooks/queriesAndMutations';
 import { useEffect } from 'react';
 import { useUserContext } from '../../context/AuthProvider';
 

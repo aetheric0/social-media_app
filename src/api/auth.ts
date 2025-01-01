@@ -56,40 +56,48 @@ export async function signOutAccount() {
 }
 
 export const createPost = async (postData: INewPost) => {
+  const formData = new FormData();
 
-    const formData = new FormData();
+  postData.files?.forEach((file, index) => {
+    console.log(`Appending file ${index}:`, file.name, file);
+    formData.append("files", file);
+  });
 
-    
-    if (postData.file) { // Check if a file is present
-      formData.append('file', postData.file); 
+  // Log FormData contents
+  for (let pair of formData.entries()) {
+    console.log(pair[0] + ', ' + pair[1]);
   }
 
-    if (postData.caption) {
-        formData.append('caption', postData.caption);
-    }
+  if (postData.caption) {
+    formData.append('caption', postData.caption);
+  }
 
-    if (postData.location) {
-        formData.append('location', postData.location);
-    }
+  if (postData.location) {
+    formData.append('location', postData.location);
+  }
 
-    if (postData.tags) {
-        postData.tags.forEach((tag) => formData.append('tags', tag)); 
-    }
+  if (postData.tags) {
+    postData.tags.forEach((tag) => formData.append('tags', tag));
+  }
 
-    if (postData.creator) {
-        formData.append('creator', postData.creator);
-    }
- 
-    try {
-        const response = await axios.post('http://localhost:5000/api/auth/createPost', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-            withCredentials: true,
-        });
-        return response.data;
-    } catch (error) {
-        console.error("Error creating post in API:", error);
-        throw error;
-    }
+  if (postData.creator) {
+    formData.append('creator', postData.creator);
+  }
+
+  try {
+    const response = await axios.post(
+      'http://localhost:5000/api/auth/createPost',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error creating post in API:", error);
+    throw error;
+  }
 };

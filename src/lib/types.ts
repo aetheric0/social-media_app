@@ -17,7 +17,7 @@ export type INavLink = {
     caption: string;
     location?: string; // Make file optional
     tags?: string[];
-    file: File | null;
+    files: File[];
     creator: string;
 };
   

@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { PostData, INewPost } from "@/lib/types"; // Make sure this interface is correct
+import { PostData, INewPost } from "@/lib/types";
 import { useNavigate } from "react-router-dom";
-import { PostValidation } from "@/lib/validation/index"; // Import your validation schema
+import { PostValidation } from "@/lib/validation/index";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormField,
+  FormField, // Keep this import
   FormItem,
   FormLabel,
   FormMessage,
@@ -22,15 +22,14 @@ import { useUserContext } from "../../context/AuthProvider";
 import Loader from "@/components/shared/Loader";
 
 type PostFormProps = {
-  post?: PostData; // Correct type for Mongoose
+  post?: PostData;
 };
 
 const PostForm = ({ post }: PostFormProps) => {
   const { mutate: createPost, isPending: isCreatingPost } = useCreatePost();
   const { user } = useUserContext();
   const navigate = useNavigate();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const form = useForm<z.infer<typeof PostValidation>>({
     resolver: zodResolver(PostValidation),
@@ -41,30 +40,26 @@ const PostForm = ({ post }: PostFormProps) => {
     },
   });
 
-  const handleFileChange = (file: File | null) => {
-    setSelectedFile(file);
-    if (file) {
-      setPreviewUrl(URL.createObjectURL(file));
-    } else {
-      setPreviewUrl(null);
-    }
-  };
+  const handleFilesChange = useCallback((files: File[]) => {
+    setSelectedFiles(files);
+  }, []);
 
   const onSubmit = async (values: z.infer<typeof PostValidation>) => {
     try {
-      const tagsArray = values.tags // No need for ternary here
-        .split(",")
-        .map((tag) => tag.trim());
+      const tagsArray = values.tags
+        ? values.tags.split(",").map((tag) => tag.trim())
+        : [];
 
-      if (!selectedFile) {
-        throw new Error("No file uploaded");
+      if (!selectedFiles || selectedFiles.length === 0) {
+        console.log("selectedFiles:", selectedFiles);
+        throw new Error("No files uploaded");
       }
 
       const newPost: INewPost = {
         caption: values.caption,
         location: values.location,
         tags: tagsArray,
-        file: selectedFile, // Send the File object
+        files: selectedFiles, //send files as files
         creator: user?.id || "",
       };
 
@@ -97,25 +92,13 @@ const PostForm = ({ post }: PostFormProps) => {
             </FormItem>
           )}
         />
-
-        <FormItem>
+        <div>
           {" "}
-          {/* Only FormItem, FormLabel, FormControl */}
+          {/* REMOVE FormField here */}
           <FormLabel className="shad-form_label">Add Photos</FormLabel>
-          <FormControl>
-            <FileUploader onFileChange={handleFileChange} />
-          </FormControl>
-          {previewUrl && (
-            <img
-              src={previewUrl}
-              alt="Preview"
-              style={{ maxWidth: "200px", marginTop: "10px" }}
-            />
-          )}
-          <FormMessage className="shad-form_message" />
-        </FormItem>
-
-        {/* ... other form fields (location, tags) */}
+          <FileUploader onFilesChange={handleFilesChange} />
+        </div>{" "}
+        {/* REMOVE FormField here */}
         <FormField
           control={form.control}
           name="location"
@@ -149,7 +132,6 @@ const PostForm = ({ post }: PostFormProps) => {
             </FormItem>
           )}
         />
-
         <div className="flex gap-4 items-center justify-end">
           <Button type="button" className="shad-button_dark_4">
             Cancel

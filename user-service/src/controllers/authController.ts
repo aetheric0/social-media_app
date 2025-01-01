@@ -111,7 +111,7 @@ export const refreshToken = (req: AuthenticatedRequest, res: Response): void => 
             return;
         }
         res.status(200).json({
-            id: user.accountId,
+            _id: user._id,
             firstName: user.firstName,
             username: user.username,
             email: user.email,

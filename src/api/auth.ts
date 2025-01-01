@@ -63,10 +63,18 @@ export const createPost = async (postData: INewPost) => {
     formData.append("files", file);
   });
 
+<<<<<<< HEAD
   // Log FormData contents
   for (let pair of formData.entries()) {
     console.log(pair[0] + ', ' + pair[1]);
   }
+=======
+    if (postData.file && postData.file.length > 0) {
+        postData.file.forEach((file) => {
+            formData.append('file', file);
+        });
+    }
+>>>>>>> d135bf642b49db51106fe9e16b51fd14560b8f4d
 
   if (postData.caption) {
     formData.append('caption', postData.caption);
@@ -80,6 +88,7 @@ export const createPost = async (postData: INewPost) => {
     postData.tags.forEach((tag) => formData.append('tags', tag));
   }
 
+<<<<<<< HEAD
   if (postData.creator) {
     formData.append('creator', postData.creator);
   }
@@ -101,3 +110,34 @@ export const createPost = async (postData: INewPost) => {
     throw error;
   }
 };
+=======
+    if (postData.creator) {
+        formData.append('creator', postData.creator);
+    }
+ 
+    try {
+        const response = await axios.post('http://localhost:5000/api/user/create-post', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            withCredentials: true,
+        });
+        console.log('Create Post Response:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Error creating post in API:", error);
+        throw error;
+    }
+};
+
+export async function getRecentPosts() {
+  const posts = await axios.get(
+    'http://localhost:5000/api/user/get-recent-posts', 
+    { withCredentials: true}
+  );
+
+  if (!posts) throw Error;
+
+  return posts
+}
+>>>>>>> d135bf642b49db51106fe9e16b51fd14560b8f4d

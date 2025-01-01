@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { PostData, INewPost } from "@/lib/types";
+import { INewPost } from "../lib/types";
 import { useNavigate } from "react-router-dom";
 import { PostValidation } from "@/lib/validation/index";
 import { Button } from "@/components/ui/button";
@@ -17,12 +17,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import FileUploader from "@/components/shared/FileUploader";
-import { useCreatePost } from "@/hooks/useAuthMutations";
+import { useCreatePost } from "@/hooks/queriesAndMutations";
 import { useUserContext } from "../../context/AuthProvider";
-import Loader from "@/components/shared/Loader";
 
 type PostFormProps = {
-  post?: PostData;
+  post?: Models.Document;
 };
 
 const PostForm = ({ post }: PostFormProps) => {
@@ -35,8 +34,9 @@ const PostForm = ({ post }: PostFormProps) => {
     resolver: zodResolver(PostValidation),
     defaultValues: {
       caption: post ? post.caption : "",
+      file: "",
       location: post ? post.location : "",
-      tags: post?.tags?.join(",") || "",
+      tags: post ? post.tags.join(",") : "",
     },
   });
 
@@ -55,11 +55,17 @@ const PostForm = ({ post }: PostFormProps) => {
         throw new Error("No files uploaded");
       }
 
+      const imageUrl = uploadedFiles[0]
+        ? URL.createObjectURL(uploadedFiles[0])
+        : "";
+
       const newPost: INewPost = {
         caption: values.caption,
         location: values.location,
         tags: tagsArray,
-        files: selectedFiles, //send files as files
+        file: uploadedFiles.length > 0 ? uploadedFiles[0].name : "",
+        imageUrl,
+        imageId: `${uploadedFiles[0].name}-${Date.now()}`,
         creator: user?.id || "",
       };
 
@@ -74,6 +80,7 @@ const PostForm = ({ post }: PostFormProps) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
+        encType="multipart/form-data"
         className="flex flex-col justify-center gap-9 w-full max-w-5xl"
       >
         <FormField

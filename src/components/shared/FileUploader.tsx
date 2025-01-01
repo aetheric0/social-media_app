@@ -1,4 +1,3 @@
-// src/components/shared/FileUploader.tsx
 import React, { useState, useCallback } from "react";
 import { FileWithPath, useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";

@@ -4,7 +4,7 @@ import { getCurrentUser } from '../api/auth';
 import { IContextType, IUser } from '../lib/types';
 
 export const INITIAL_USER: IUser = {
-  id: '',
+  _id: '',
   firstName: '',
   lastName: '',
   username: '',
@@ -37,7 +37,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const currentAccount = await getCurrentUser();
       if (currentAccount) {
         setUser({
-          id: currentAccount.id,
+          _id: currentAccount._id,
           firstName: currentAccount.firstName,
           lastName: currentAccount.lastName,
           username: currentAccount.username,
@@ -58,13 +58,16 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token && location.pathname !== '/sign-up') {
-      navigate('/sign-in');
-    } else if (token){
+      const token = localStorage.getItem('token');
+      if (!token && location.pathname !== '/sign-up') navigate('/sign-in');
+
       checkAuthUser();
+<<<<<<< HEAD
     }
   }, [navigate, location.pathname]); // Add location to the dependency array
+=======
+    }, []); // Add location to the dependency array
+>>>>>>> d135bf642b49db51106fe9e16b51fd14560b8f4d
 
   const value = {
     user,

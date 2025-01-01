@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 import { Form } from "../../components/ui/form";
 import { useToast } from '../../hooks/use-toast';
 import { ToastAction } from "../../components/ui/toast";
-import { useSigninAccount } from "../../hooks/useAuthMutations";
+import { useSigninAccount } from "../../hooks/queriesAndMutations";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../../context/AuthProvider";
 
@@ -79,7 +79,7 @@ const onSubmit = async (values: z.infer<typeof SigninValidation>) => {
               ): "Login"
             }
           </Button>
-          <p className="text-small-regular text-light-2 text-center mt-2"> Don't hae an account ? <Link to="/sign-up" className="text-primary-500 text-samll-semibold ml-1">Sign up</Link></p>
+          <p className="text-small-regular text-light-2 text-center mt-2"> Don't have an account ? <Link to="/sign-up" className="text-primary-500 text-samll-semibold ml-1">Sign up</Link></p>
         </form>
         </div>
       </Form>

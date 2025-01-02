@@ -63,18 +63,11 @@ export const createPost = async (postData: INewPost) => {
     formData.append("files", file);
   });
 
-<<<<<<< HEAD
-  // Log FormData contents
-  for (let pair of formData.entries()) {
-    console.log(pair[0] + ', ' + pair[1]);
-  }
-=======
     if (postData.file && postData.file.length > 0) {
         postData.file.forEach((file) => {
             formData.append('file', file);
         });
     }
->>>>>>> d135bf642b49db51106fe9e16b51fd14560b8f4d
 
   if (postData.caption) {
     formData.append('caption', postData.caption);
@@ -95,29 +88,6 @@ export const createPost = async (postData: INewPost) => {
 
   try {
     const response = await axios.post(
-      'http://localhost:5000/api/auth/createPost',
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        withCredentials: true,
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error creating post in API:", error);
-    throw error;
-  }
-};
-=======
-    if (postData.creator) {
-        formData.append('creator', postData.creator);
-    }
- 
-    try {
-        const response = await axios.post('http://localhost:5000/api/user/create-post', formData, {
-            headers: {
                 'Content-Type': 'multipart/form-data',
             },
             withCredentials: true,
@@ -141,3 +111,4 @@ export async function getRecentPosts() {
   return posts
 }
 >>>>>>> d135bf642b49db51106fe9e16b51fd14560b8f4d
+

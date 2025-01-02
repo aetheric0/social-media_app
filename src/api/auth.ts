@@ -106,3 +106,51 @@ export async function getRecentPosts() {
 
   return posts
 }
+
+export async function likePost(postId: string) {
+  try {
+    const updatedPost = await axios.post('http://localhost:5000/api/user/like-post',
+    {
+      postId,
+    },
+  {withCredentials: true})
+  if (!updatedPost) throw Error;
+  
+  return updatedPost.data;
+  } catch(error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+export async function savePost(postId: string, userId: string) {
+  try {
+    const updatedPost = await axios.post('http://localhost:5000/api/user/save-post',
+    {
+      post: postId,
+      user: userId,
+    },
+  {withCredentials: true})
+  if (!updatedPost) throw Error;
+
+  return updatedPost.data;
+  } catch(error) {
+    console.log(error);
+  }
+}
+
+export async function deleteSavedPost(savedRecordId: string) {
+  try {
+    const response = await axios.delete('http://localhost:5000/api/user/delete-saved-post',
+    {
+      data: { savedRecordId },
+      withCredentials: true
+    },
+  )
+  if (!response || response.data.status !== 200) throw Error;
+  return { status: 'ok'};
+  } catch(error) {
+    console.log(error);
+    throw error;
+  }
+}

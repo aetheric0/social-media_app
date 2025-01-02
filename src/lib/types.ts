@@ -41,6 +41,7 @@ export type IPost = {
   location?: string;
   file: File[]; // Make file optional
   tags?: string[];
+  likes: string[];
   imageUrl: string; 
   imageId: string;
   creator: IUser;
@@ -75,3 +76,9 @@ export type IPost = {
     username: string;
     password: string;
   };
+
+export type ISave = {
+  _id: string;
+  user: string[];
+  post: string[];
+}

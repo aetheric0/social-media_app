@@ -2,6 +2,7 @@ import { IPost } from "@/lib/types"
 import { multiFormatDateString } from "@/lib/utils";
 import { useUserContext } from "../../context/AuthProvider";
 import { Link } from "react-router-dom";
+import PostStats from "./PostStats";
 
 type PostCardProps = {
     post: IPost;
@@ -9,8 +10,6 @@ type PostCardProps = {
 
 const PostCard = ({ post }: PostCardProps ) => {
   const { user } = useUserContext();
-  console.log("user id: ", user._id);
-  console.log("creator id: ", post.creator._id);
   if (!post.creator) return;
   return (
     <div className="post-card">
@@ -67,6 +66,7 @@ const PostCard = ({ post }: PostCardProps ) => {
             alt="post image"
           />
         </Link>
+        <PostStats post={post} userId={user._id} />
     </div>
   )
 }

@@ -17,7 +17,7 @@ const Home = () => {
             ) : ( 
               <ul className="flex flex-col flex-1 gap-9 w-full"> 
                 { posts ? ( posts.map((post: IPost) => ( 
-                  <PostCard post={post}/>
+                  <PostCard post={post} key={post.caption}/>
                 )) ) : 
                   ( <p>No posts available</p> )
                 } 

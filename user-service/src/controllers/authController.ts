@@ -37,7 +37,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     }
 };
 
-export const login = async (req: Request, res: Response, next: NextFunction): Promise<string | any> => {
+export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { username, password } = req.body;
   
     try {
@@ -50,14 +50,16 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
          
         if (!existingUser) {
             console.log('User not found');
-            return next(new AppError('Account does not exist', 404));
+            next(new AppError('Account does not exist', 404));
+            return;
         }
 
         const isPasswordValid = await bcrypt.compare(password, existingUser.password);
 
         if (!isPasswordValid) {
             console.log('Invalid password');
-            return next(new AppError('Password is Incorrect', 401));
+            next(new AppError('Password is Incorrect', 401));
+            return;
         }
 
         const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET!, { expiresIn: '1h' });

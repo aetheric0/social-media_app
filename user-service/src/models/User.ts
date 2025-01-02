@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 mongoose.set('debug', true);
 
 export interface IUser extends Document {
+    _id: Schema.Types.ObjectId;
     firstName: string;
     lastName: string;
     username: string;

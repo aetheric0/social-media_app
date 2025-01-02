@@ -1,16 +1,16 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { getCurrentUser } from '../api/auth';
-import { IContextType, IUser } from '../lib/types';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { getCurrentUser } from "../api/auth";
+import { IContextType, IUser } from "../lib/types";
 
 export const INITIAL_USER: IUser = {
-  _id: '',
-  firstName: '',
-  lastName: '',
-  username: '',
-  email: '',
-  imageUrl: '',
-  bio: '',
+  _id: "",
+  firstName: "",
+  lastName: "",
+  username: "",
+  email: "",
+  imageUrl: "",
+  bio: "",
 };
 
 const INITIAL_STATE: IContextType = {
@@ -58,16 +58,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-      const token = localStorage.getItem('token');
-      if (!token && location.pathname !== '/sign-up') navigate('/sign-in');
+    const token = localStorage.getItem("token");
+    if (!token && location.pathname !== "/sign-up") navigate("/sign-in");
 
-      checkAuthUser();
-<<<<<<< HEAD
-    }
-  }, [navigate, location.pathname]); // Add location to the dependency array
-=======
-    }, []); // Add location to the dependency array
->>>>>>> d135bf642b49db51106fe9e16b51fd14560b8f4d
+    checkAuthUser();
+  }, []); // Add location to the dependency array
 
   const value = {
     user,
@@ -78,11 +73,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkAuthUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

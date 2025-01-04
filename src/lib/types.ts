@@ -14,6 +14,7 @@ export type INavLink = {
     email: string;
     imageUrl: string;
     bio: string;
+    savedPosts: string[];
   };
   
   export type IUpdateUser = {
@@ -50,13 +51,14 @@ export type IPost = {
 };
   
   export type IUpdatePost = {
-    postId: string;
+    _id: string;
     caption: string;
     imageId: string;
-    imageUrl: URL;
+    imageUrl: string;
     file: File[];
     location?: string;
-    tags?: string;
+    tags?: string[];
+    creator: string;
   };
   
 

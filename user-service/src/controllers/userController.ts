@@ -4,10 +4,8 @@ import { AuthenticatedRequest } from '../middlewares/authMiddleware';
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import { handleFileUpload } from '../middlewares/userMiddleware'; // Import the middleware
 import AppError from '../utils/appError';
-import streamifier from 'streamifier'
-import Save from '../models/Saves';
+import streamifier from 'streamifier';
 import User from '../models/User';
-
 
 
 interface CloudinaryUploadResult {
@@ -104,7 +102,7 @@ export const getRecentPosts = async (req: AuthenticatedRequest, res: Response, n
 export const likePost = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   const { postId } = req.body;
   const userId = req.user?.id;
-  console.log(userId);
+  
 
   try {
     const post = await Posts.findById(postId);
@@ -135,42 +133,35 @@ export const likePost = async (req: AuthenticatedRequest, res: Response, next: N
   }
 }
 
+
 export const savePost = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
-  const { user, post } = req.body;
-
-  try {
-    const existingSave = await Save.findOne({ user: user, post: post})
-    if (existingSave) {
-      res.status(400).json({message: 'Post already saved'})
+  const { post: postId } = req.body;
+  const userId = req.user?.id;
+   try {
+     const post = await Posts.findById(postId);
+     const user = await User.findById(userId);
+     if (!user) {
+      res.status(404).json({ message: 'User not found'})
       return;
-    }
+     }
+     user.savedPosts = user.savedPosts.filter(_id => _id !== null);
+     if (!post) {
+     res.status(404).json({message: 'Post not found'})
+     return;
+   }
+     const savedPostsArray = user.savedPosts.includes(post._id)
+     ? user.savedPosts.filter(_id => _id.toString() !== postId) : [...user.savedPosts, post._id];
+     user.savedPosts = savedPostsArray
+     const stringPostArray = savedPostsArray.map(_id => _id.toString());
 
-    const newSave = new Save({
-      user,
-      post,
-    });
-
-    await newSave.save();
-
-    res.status(201).json({
+    await user.save();
+    res.status(200).json({ 
       status: 'success',
-      newSave,
-    })
+      user,
+      savedPosts: stringPostArray,
+     
+    });
   } catch(error) {
     next (new AppError(`Error saving post: ${error}`, 500));
-  }
-}
-
-export const deleteSavedPost = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
-  const { savedRecordId } = req.body;
-  try {
-    const result = await Save.deleteOne({_id: savedRecordId})
-
-    if (result.deletedCount === 0) {
-      res.status(400).json({ message: 'Save record not found' })
-    }
-    res.status(200).json({ message: 'Post Deleted Successfully' });
-  } catch(error) {
-    next(new AppError(`Error: Could Not Delete Saved Post: ${error}`, 500));
   }
 }

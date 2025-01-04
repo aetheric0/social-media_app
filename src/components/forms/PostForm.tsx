@@ -3,7 +3,7 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { INewPost } from '../../lib/types';
+import { INewPost, IUpdatePost } from '../../lib/types';
 import { useNavigate } from "react-router-dom";
 import { PostValidation } from "@/lib/validation/index";
 import { Button } from "@/components/ui/button";
@@ -21,12 +21,14 @@ import FileUploader from "@/components/shared/FileUploader";
 import { useCreatePost } from "@/hooks/queriesAndMutations";
 import { useUserContext } from "../../context/AuthProvider";
 import Loader from "../shared/Loader";
+import { updatePost } from "@/api/auth";
 
 type PostFormProps = {
-  post?: INewPost;
+  post?: IUpdatePost;
+  action: 'Create' | 'Update';
 };
 
-const PostForm = ({ post }: PostFormProps) => {
+const PostForm = ({ action, post  }: PostFormProps) => {
   const { mutate: createPost, isLoading: isCreatingPost } = useCreatePost();
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const { user } = useUserContext();
@@ -35,9 +37,9 @@ const PostForm = ({ post }: PostFormProps) => {
   const form = useForm<z.infer<typeof PostValidation>>({
     resolver: zodResolver(PostValidation),
     defaultValues: {
-      caption: post ? post.caption : "",
+      caption: post ? post?.caption : "",
       file: [],
-      location: post ? post.location : "",
+      location: post ? post?.location : "",
       tags: (post && post.tags) ? post.tags.join(",") : "",
     },
   });
@@ -48,26 +50,33 @@ const PostForm = ({ post }: PostFormProps) => {
         ? values.tags.split(",").map((tag) => tag.trim())
         : [];
       
-      if (uploadedFiles.length === 0) {
+      if (action === 'Create' && uploadedFiles.length === 0) {
         throw new Error("No files uploaded");
       }
   
-      const newPost: INewPost = {
+      const postData: IUpdatePost = {
+        _id: post ? post._id : '',
         caption: values.caption,
         location: values.location,
         tags: tagsArray,
-        file: uploadedFiles.length > 0 ? uploadedFiles : [], 
+        file: uploadedFiles.length > 0 ? uploadedFiles : post?.file || [], 
         imageUrl: "",
-        imageId: `${uploadedFiles[0].name}-${Date.now()}`,
-        creator: user?.id || '',
+        imageId: uploadedFiles.length > 0 
+        ? `${uploadedFiles[0].name}-${Date.now()}` 
+        : post?.imageId || '',
+        creator: user?._id || '',
       };
-  
-      await createPost(newPost);
+      
+      if (action === 'Create') {
+        createPost(postData);
+      } else 
+      updatePost(postData);
       navigate("/");
     } catch (error) {
       console.error("Failed to create post:", error);
     }
   };
+  console.log('Post: ', post);
 
   return (
     <Form {...form}>
@@ -101,7 +110,7 @@ const PostForm = ({ post }: PostFormProps) => {
               <FormControl>
                 <FileUploader
                   fieldChange={field.onChange}
-                  mediaUrl={post?.imageUrl}
+                  mediaUrl={post ? post.imageUrl: null}
                   onFilesChange={setUploadedFiles} 
                 />
               </FormControl>

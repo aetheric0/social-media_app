@@ -8,6 +8,7 @@ import userRoutes from './routes/userRoutes';
 import cookieParser from 'cookie-parser'
 import { errorHandler } from './middlewares/errorHandler';
 import cors from 'cors';
+import postRoutes from './routes/postRoutes';
 
 
 const app = express();
@@ -25,6 +26,7 @@ connectDB();
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/posts', postRoutes);
    
 app.use(express.urlencoded({ extended: true }));
 

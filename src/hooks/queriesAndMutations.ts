@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createUser, signinAccount, signOutAccount, createPost, getRecentPosts, likePost, savePost, deleteSavedPost, getCurrentUser } from '../api/auth';
+import { createUser, signinAccount, signOutAccount, createPost, getRecentPosts, likePost, savePost, getPostById, } from '../api/auth';
 import { INewUser, INewPost } from '../lib/types';
 import { QUERY_KEYS } from './queryKeys';
 
@@ -46,7 +46,7 @@ export const useLikePost = () => {
   return useMutation({
     mutationFn: ( postId: string ) => likePost(postId),
     onSuccess: (data) => {
-      const updatedPostId = data.post._id
+      const updatedPostId = data.post._id;
 
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_POST_BY_ID, updatedPostId]
@@ -71,9 +71,14 @@ export const useSavePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ postId, userId }: {postId: string; 
-      userId: string;}) => savePost(postId, userId),
-    onSuccess: () => {
+    mutationFn: ( postId: string ) => savePost(postId),
+    onSuccess: (data) => {
+      const updatedPostId = data.postId;
+      const updatedUser = data.user;
+
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_BY_ID, updatedPostId]
+      });
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
       });
@@ -81,40 +86,20 @@ export const useSavePost = () => {
         queryKey: [QUERY_KEYS.GET_POSTS]
       });
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_CURRENT_USER]
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER, updatedUser]
       });
     },
     onError: (error) => {
-      console.error('Error liking post: ', error);
+      console.error('Error saving post: ', error);
     }
   })
 }
 
-export const useDeleteSavedPost = () => {
-  const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (savedRecordId: string) => deleteSavedPost(savedRecordId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
-      });
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_POSTS]
-      });
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.GET_CURRENT_USER]
-      });
-    },
-    onError: (error) => {
-      console.error('Error liking post: ', error);
-    }
-  })
-}
-
-export const useGetCurrentUser = () => {
+export const useGetPostById = (postId: string) => {
   return useQuery({
-    queryKey: [QUERY_KEYS.GET_CURRENT_USER],
-    queryFn: getCurrentUser
+    queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
+    queryFn: () => getPostById(postId),
+    enabled: !!postId
   })
 }

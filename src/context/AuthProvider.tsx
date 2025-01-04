@@ -11,6 +11,7 @@ export const INITIAL_USER: IUser = {
   email: '',
   imageUrl: '',
   bio: '',
+  savedPosts: [],
 };
 
 const INITIAL_STATE: IContextType = {
@@ -44,13 +45,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           email: currentAccount.email,
           imageUrl: currentAccount.imageUrl,
           bio: currentAccount.bio,
+          savedPosts: currentAccount.savedPosts || [],
         });
         setIsAuthenticated(true);
         return true;
       }
     } catch (error) {
-      console.error("Authentication error:", error); // More descriptive error message
-      setIsAuthenticated(false); // Ensure isAuthenticated is false on error
+      console.error("Authentication error:", error);
+      setIsAuthenticated(false);
     } finally {
       setIsLoading(false); // Set loading to false regardless of success/failure
     }

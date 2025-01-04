@@ -107,18 +107,22 @@ export const refreshToken = (req: AuthenticatedRequest, res: Response): void => 
         
         const userId = typeof req.user === 'string' ? req.user: req.user.id;
         const user = await User.findById(userId);
+        
 
         if(!user) {
             res.status(404).json({ message: 'User not found' });
             return;
         }
+        
+        const savedPosts = user.savedPosts.map((id) => id.toString());
         res.status(200).json({
             _id: user._id,
             firstName: user.firstName,
             username: user.username,
             email: user.email,
             imageUrl: user.imageUrl,
-            bio: user.bio
+            bio: user.bio,
+            savedPosts,
         });
     } catch (error) {
         next (new AppError(`Could not retrieve current user: ${error}`, 500));

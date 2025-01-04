@@ -66,7 +66,7 @@ const PostCard = ({ post }: PostCardProps ) => {
             alt="post image"
           />
         </Link>
-        <PostStats post={post} userId={user._id} />
+        <PostStats post={post} user={user} />
     </div>
   )
 }

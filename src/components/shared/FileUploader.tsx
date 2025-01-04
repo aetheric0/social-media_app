@@ -3,28 +3,29 @@ import { FileWithPath, useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
 
 interface FileUploaderProps {
-  fieldChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  mediaUrl?: string;
+  fieldChange: (FILES: File[]) => void;
+  mediaUrl: string | null;
   onFilesChange: (files: File[]) => void;
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({
   fieldChange,
   mediaUrl,
-  onFilesChange,
 }) => {
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const [file, setFile] = useState<File[]>([]);
+  const [fileUrl, setFileUrl] = useState(mediaUrl);
 
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
-      onFilesChange(acceptedFiles); // Update parent state
+      setFile(acceptedFiles);
+      fieldChange(acceptedFiles); // Update parent state
       if (acceptedFiles && acceptedFiles.length > 0) {
         setFileUrl(URL.createObjectURL(acceptedFiles[0]));
       } else {
-        setFileUrl(null)
+        setFileUrl(null);
       }
     },
-    [onFilesChange] // Removed unnecessary dependencies
+    [file] // Removed unnecessary dependencies
   );
 
   const { getRootProps, getInputProps } = useDropzone({

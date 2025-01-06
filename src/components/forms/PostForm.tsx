@@ -3,7 +3,7 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { INewPost, IUpdatePost } from '../../lib/types';
+import { IUpdatePost } from '../../lib/types';
 import { useNavigate } from "react-router-dom";
 import { PostValidation } from "@/lib/validation/index";
 import { Button } from "@/components/ui/button";
@@ -49,6 +49,7 @@ const PostForm = ({ action, post  }: PostFormProps) => {
       const tagsArray = values.tags
         ? values.tags.split(",").map((tag) => tag.trim())
         : [];
+        console.log(uploadedFiles);
       
       if (action === 'Create' && uploadedFiles.length === 0) {
         throw new Error("No files uploaded");
@@ -69,14 +70,16 @@ const PostForm = ({ action, post  }: PostFormProps) => {
       
       if (action === 'Create') {
         createPost(postData);
-      } else 
-      updatePost(postData);
+      } else { 
+        updatePost(postData);
+      }
+      console.log('Post: ', postData);
       navigate("/");
     } catch (error) {
       console.error("Failed to create post:", error);
     }
   };
-  console.log('Post: ', post);
+ 
 
   return (
     <Form {...form}>

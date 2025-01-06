@@ -11,6 +11,7 @@ interface FileUploaderProps {
 const FileUploader: React.FC<FileUploaderProps> = ({
   fieldChange,
   mediaUrl,
+  onFilesChange,
 }) => {
   const [file, setFile] = useState<File[]>([]);
   const [fileUrl, setFileUrl] = useState(mediaUrl);
@@ -18,12 +19,15 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
       setFile(acceptedFiles);
+      console.log(acceptedFiles);
+      onFilesChange(acceptedFiles);
       fieldChange(acceptedFiles); // Update parent state
       if (acceptedFiles && acceptedFiles.length > 0) {
         setFileUrl(URL.createObjectURL(acceptedFiles[0]));
       } else {
         setFileUrl(null);
       }
+      console.log('Field Change: ', fieldChange);
     },
     [file] // Removed unnecessary dependencies
   );

@@ -9,9 +9,10 @@ import mongoose from 'mongoose';
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const accountId = new mongoose.Types.ObjectId().toString();
     const { firstName, lastName, username, email, password, imageUrl} = req.body;
+    const formattedUsername = username.toLowerCase()
 
     try {
-        const existingUsername = await User.findOne({ username });
+        const existingUsername = await User.findOne({ formattedUsername });
         if (existingUsername) {
             res.status(409).json({ message: 'Username already exists' });
             return;
@@ -23,7 +24,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
             return
         }
         
-        const user = new User({ firstName, lastName, username, email, password, accountId, imageUrl });
+        const user = new User({ firstName, lastName, formattedUsername, email, password, accountId, imageUrl });
         await user.save();
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
@@ -39,12 +40,13 @@ export const register = async (req: Request, res: Response, next: NextFunction):
 
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { username, password } = req.body;
+    const formattedUsername = username.toLowerCase()
   
     try {
         const existingUser = await User.findOne({ 
             $or: [ 
-                { username: username }, 
-                { email: username } 
+                { username: formattedUsername }, 
+                { email: formattedUsername } 
             ]
          }); 
          

@@ -5,13 +5,11 @@ import { Button } from "@/components/ui/button";
 interface FileUploaderProps {
   fieldChange: (FILES: File[]) => void;
   mediaUrl: string | null;
-  onFilesChange: (files: File[]) => void;
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({
   fieldChange,
   mediaUrl,
-  onFilesChange,
 }) => {
   const [file, setFile] = useState<File[]>([]);
   const [fileUrl, setFileUrl] = useState(mediaUrl);
@@ -19,8 +17,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
       setFile(acceptedFiles);
-      console.log(acceptedFiles);
-      onFilesChange(acceptedFiles);
       fieldChange(acceptedFiles); // Update parent state
       if (acceptedFiles && acceptedFiles.length > 0) {
         setFileUrl(URL.createObjectURL(acceptedFiles[0]));

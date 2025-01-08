@@ -140,14 +140,14 @@ export async function savePost(postId: string) {
 }
 
 export async function getPostById(postId: string) {
+  
   try {
     const post = await axios.post(
       'http://localhost:5000/api/posts/get-post-by-id',
       { postId },
       { withCredentials: true },
     );
-
-    return post.data;
+    return post;
   } catch(error) {
     console.log(error);
   }
@@ -187,5 +187,24 @@ export async function updatePost(postData: IUpdatePost) {
   } catch (error) {
       console.error("Error creating post in API:", error);
       throw error;
+  }
+}
+
+// export async function getInfinitePosts({ pageParam }: {pageParam: number}) {
+//   const queries: any[] = [Query.orderDesc()]
+// }
+
+export async function searchPosts(searchTerm: string) {
+  try {
+    const posts = await axios.post(
+      'http://localhost:5000/api/posts/get-post-by-caption',
+      { searchTerm },
+      { withCredentials: true},
+    )
+    if (!posts) throw Error;
+
+    return posts;
+  } catch(error) {
+    console.log(error);
   }
 }

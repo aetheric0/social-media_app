@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createUser, signinAccount, signOutAccount, createPost, getRecentPosts, likePost, savePost, getPostById, } from '../api/auth';
-import { INewUser, INewPost } from '../lib/types';
+import { createUser, signinAccount, signOutAccount, createPost, getRecentPosts, likePost, savePost, getPostById, updatePost } from '../api/auth';
+import { INewUser, INewPost, IUpdatePost } from '../lib/types';
 import { QUERY_KEYS } from './queryKeys';
 
 export const useCreateAccount = () => {
@@ -100,6 +100,19 @@ export const useGetPostById = (postId: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
     queryFn: () => getPostById(postId),
-    enabled: !!postId
+    // enabled: !!postId,
   })
+
+}
+
+export const useUpdatePost = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (post: IUpdatePost) => updatePost(post),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS]
+      })
+    }
+  });
 }

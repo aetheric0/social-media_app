@@ -18,10 +18,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import FileUploader from "@/components/shared/FileUploader";
-import { useCreatePost } from "@/hooks/queriesAndMutations";
+import { useCreatePost, useUpdatePost } from "@/hooks/queriesAndMutations";
 import { useUserContext } from "../../context/AuthProvider";
-import Loader from "../shared/Loader";
-import { updatePost } from "@/api/auth";
+
 
 type PostFormProps = {
   post?: IUpdatePost;
@@ -29,7 +28,8 @@ type PostFormProps = {
 };
 
 const PostForm = ({ action, post  }: PostFormProps) => {
-  const { mutate: createPost, isLoading: isCreatingPost } = useCreatePost();
+  const { mutate: createPost, isPending: isLoadingCreate } = useCreatePost();
+  const { mutateAsync: updatePost, isPending: isLoadingUpdate} = useUpdatePost();
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const { user } = useUserContext();
   const navigate = useNavigate();
@@ -49,7 +49,6 @@ const PostForm = ({ action, post  }: PostFormProps) => {
       const tagsArray = values.tags
         ? values.tags.split(",").map((tag) => tag.trim())
         : [];
-        console.log(uploadedFiles);
       
       if (action === 'Create' && uploadedFiles.length === 0) {
         throw new Error("No files uploaded");
@@ -73,8 +72,7 @@ const PostForm = ({ action, post  }: PostFormProps) => {
       } else { 
         updatePost(postData);
       }
-      console.log('Post: ', postData);
-      navigate("/");
+      navigate(`/posts/${post?._id}`);
     } catch (error) {
       console.error("Failed to create post:", error);
     }
@@ -107,14 +105,13 @@ const PostForm = ({ action, post  }: PostFormProps) => {
         <FormField
           control={form.control}
           name="file"
-          render={({ field }) => (
+          render={() => (
             <FormItem>
               <FormLabel className="shad-form_label">Add Photos</FormLabel>
               <FormControl>
                 <FileUploader
-                  fieldChange={field.onChange}
+                  fieldChange={setUploadedFiles}
                   mediaUrl={post ? post.imageUrl: null}
-                  onFilesChange={setUploadedFiles} 
                 />
               </FormControl>
               <FormMessage className="shad-form_message" />
@@ -161,14 +158,9 @@ const PostForm = ({ action, post  }: PostFormProps) => {
           <Button
             type="submit"
             className="shad-button_primary whitespace-nowrap"
-          >
-            {isCreatingPost ? (
-              <div className="flex-center gap-2">
-                <Loader /> Loading..
-              </div>
-            ) : (
-              "Submit"
-            )}
+              disabled = {isLoadingCreate || isLoadingUpdate} >
+                {isLoadingCreate || isLoadingUpdate && 'Loading...'}
+                {action} Post
           </Button>
         </div>
       </form>

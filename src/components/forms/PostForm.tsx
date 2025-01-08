@@ -54,8 +54,8 @@ const PostForm = ({ action, post  }: PostFormProps) => {
         throw new Error("No files uploaded");
       }
   
-      const postData: IUpdatePost = {
-        _id: post ? post._id : '',
+      const postData: Partial<IUpdatePost> = {
+        _id: action === 'Update' ? post?._id : undefined,
         caption: values.caption,
         location: values.location,
         tags: tagsArray,
@@ -69,10 +69,12 @@ const PostForm = ({ action, post  }: PostFormProps) => {
       
       if (action === 'Create') {
         createPost(postData);
+        navigate('/');
       } else { 
         updatePost(postData);
+        navigate(`/posts/${post?._id}`);
       }
-      navigate(`/posts/${post?._id}`);
+      console.log('Post Id', post?._id);
     } catch (error) {
       console.error("Failed to create post:", error);
     }

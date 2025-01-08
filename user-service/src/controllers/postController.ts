@@ -113,7 +113,7 @@ export const getInfinitePosts = async (req: AuthenticatedRequest, res: Response,
     const posts = await Posts.find()
       .skip(skip)
       .limit(Number(limit))
-      .populate('creator');
+      .populate('creator', '_id username firstName imageUrl');
 
     const totalPosts = await Posts.countDocuments();
 

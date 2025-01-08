@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { INewUser, INewPost, IUpdatePost } from '../lib/types';
+import { INewUser, IUpdatePost } from '../lib/types';
 
 
 export const createUser = async (user: INewUser) => {
@@ -56,7 +56,7 @@ export async function signOutAccount() {
   }
 }
 
-export const createPost = async (postData: INewPost) => {
+export const createPost = async (postData: Partial<IUpdatePost>) => {
 
     const formData = new FormData();
 
@@ -154,13 +154,13 @@ export async function getPostById(postId: string) {
   }
 }
 
-export async function updatePost(postData: IUpdatePost) {
+export async function updatePost(postData: Partial<IUpdatePost>) {
   console.log('Post Id: ', postData._id);
   const formData = new FormData();
-  const hasFileToUpdate = postData.file.length > 0;
+  const hasFileToUpdate = postData && postData.file ? postData.file.length > 0 : null;
 
   if (hasFileToUpdate) {
-    postData.file.forEach((file) => {
+    postData.file?.forEach((file) => {
       formData.append('file', file);
     });
   }

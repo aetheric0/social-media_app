@@ -3,7 +3,6 @@ import Loader from "@/components/shared/Loader";
 import SearchResults from "@/components/shared/SearchResults";
 import { Input } from "@/components/ui/input";
 import { useGetPosts } from "@/hooks/queriesAndMutations";
-import { IPost } from "@/lib/types";
 import { useEffect, useRef, useState } from "react";
 
 const Explore = () => {
@@ -11,7 +10,7 @@ const Explore = () => {
 
   const { data: postsData, fetchNextPage, hasNextPage} = useGetPosts();
 
-  const posts = postsData?.pages;
+  const posts = postsData?.pages.flatMap(page => page.posts) || [];
 
   const observer = useRef<IntersectionObserver | null>(null);
   const lastPostElementRef = useRef<HTMLDivElement | null>(null);
@@ -39,8 +38,7 @@ const Explore = () => {
   console.log('posts: ', posts);
 
   const shouldShowSearchResults = searchValue !== '';
-  const shouldShowPosts = !shouldShowSearchResults && posts
-    .every((item) => item.posts.length === 0)
+  const shouldShowPosts = !shouldShowSearchResults && posts.length === 0;
   
   return (
     <div className="explore-container">
@@ -80,18 +78,7 @@ const Explore = () => {
           />
         ) : shouldShowPosts ? (
           <p className="text-light-4 mt-10 text-center w-full"> End of posts</p>
-        ) : posts.map((item, pageIndex) => (
-          item.posts.map((post: IPost, postIndex: number) => {
-            if (pageIndex === posts.length - 1 && postIndex === item.posts.length - 1) {
-              return (
-                <div ref={lastPostElementRef} key={post._id}>
-                  <GridPostList posts={[post]} />
-                </div>
-              );
-            }
-            return <GridPostList key={post._id} posts={posts} />
-          })
-        ))}
+        ) : ( <GridPostList posts={posts} /> )}
       </div>
     </div>
   )

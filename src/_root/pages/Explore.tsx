@@ -1,16 +1,46 @@
 import GridPostList from "@/components/shared/GridPostList";
+import Loader from "@/components/shared/Loader";
 import SearchResults from "@/components/shared/SearchResults";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useGetPosts } from "@/hooks/queriesAndMutations";
+import { IPost } from "@/lib/types";
+import { useEffect, useRef, useState } from "react";
 
 const Explore = () => {
   const [searchValue, setSearchValue] = useState('');
 
-  // const posts = [];
+  const { data: postsData, fetchNextPage, hasNextPage} = useGetPosts();
 
-  // const shouldShowSearchResults = searchValue !== '';
-  //  const shouldShowPosts = !shouldShowSearchResults && posts.pages
-  //  .every((item) => item.documents.length === 0)
+  const posts = postsData?.pages;
+
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastPostElementRef = useRef<HTMLDivElement | null>(null);
+
+
+  useEffect(() => {
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasNextPage) {
+        fetchNextPage();
+      }
+    });
+    if (lastPostElementRef.current) {
+      observer.current.observe(lastPostElementRef.current);
+    }
+  })
+
+  if (!posts) {
+    return (
+      <div className="flex-center w-full h-full">
+        <Loader />
+      </div>
+    )
+  }
+  console.log('posts: ', posts);
+
+  const shouldShowSearchResults = searchValue !== '';
+  const shouldShowPosts = !shouldShowSearchResults && posts
+    .every((item) => item.posts.length === 0)
   
   return (
     <div className="explore-container">
@@ -43,17 +73,26 @@ const Explore = () => {
           />
         </div>
       </div>
-      {/* <div className="flex flex-wrap gap-9 w-full max-w-5xl">
+      <div className="flex flex-wrap gap-9 w-full max-w-5xl">
         { shouldShowSearchResults ? (
           <SearchResults 
           
           />
         ) : shouldShowPosts ? (
           <p className="text-light-4 mt-10 text-center w-full"> End of posts</p>
-        ) : posts.pages.map((item, index) => (
-          <GridPostList key={`page-${index}`} posts={item.documents} />
+        ) : posts.map((item, pageIndex) => (
+          item.posts.map((post: IPost, postIndex: number) => {
+            if (pageIndex === posts.length - 1 && postIndex === item.posts.length - 1) {
+              return (
+                <div ref={lastPostElementRef} key={post._id}>
+                  <GridPostList posts={[post]} />
+                </div>
+              );
+            }
+            return <GridPostList key={post._id} posts={posts} />
+          })
         ))}
-      </div> */}
+      </div>
     </div>
   )
 };

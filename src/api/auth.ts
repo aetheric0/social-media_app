@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { INewUser, INewPost, IUpdatePost } from '../lib/types';
 
+
 export const createUser = async (user: INewUser) => {
   const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
   const avatarUrl = `https://ui-avatars.com/api/?name=${initials}`;
@@ -190,9 +191,20 @@ export async function updatePost(postData: IUpdatePost) {
   }
 }
 
-// export async function getInfinitePosts({ pageParam }: {pageParam: number}) {
-//   const queries: any[] = [Query.orderDesc()]
-// }
+export async function getInfinitePosts({ pageParam }: {pageParam: number}) {
+  try {
+    const queries = await axios.get(
+      'http://localhost:5000/api/posts/load-posts',
+      { params: {page: pageParam, limit: 10 }, 
+      withCredentials: true,
+    });
+    console.log('API Response: ', queries.data);
+    return queries.data;
+  } catch(error) {
+    console.error('Error in API Call: ', error);
+    throw error;
+  }
+}
 
 export async function searchPosts(searchTerm: string) {
   try {

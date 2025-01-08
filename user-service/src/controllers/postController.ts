@@ -103,5 +103,29 @@ export const updatePost = [
       }
     }
   ];
-  
-  
+
+export const getInfinitePosts = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { page = 1, limit =  10} = req.query;
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const posts = await Posts.find()
+      .skip(skip)
+      .limit(Number(limit))
+      .populate('creator');
+
+    const totalPosts = await Posts.countDocuments();
+
+    res.status(200).json({
+      status: 'success',
+      results: posts.length,
+      posts,
+      totalPosts,
+      currentPage: Number(page),
+      totalPages: Math.ceil((totalPosts / Number(limit)))
+    });
+  } catch(error) {
+    next(new AppError(`Error fetching posts: ${error}`, 500));
+  }
+}

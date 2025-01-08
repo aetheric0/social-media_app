@@ -79,7 +79,7 @@ export const  createPost = async (req: AuthenticatedRequest, res: Response, next
 export const getRecentPosts = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
       const posts = await Posts.find()
-      .sort({date: -1}) // Sort by date in desc order
+      .sort({createdAt: -1}) // Sort by date in desc order
       .limit(20)
       .populate('creator', 'username firstName imageUrl');
 

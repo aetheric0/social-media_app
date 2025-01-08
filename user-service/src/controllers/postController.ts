@@ -111,6 +111,7 @@ export const getInfinitePosts = async (req: AuthenticatedRequest, res: Response,
     const skip = (Number(page) - 1) * Number(limit);
 
     const posts = await Posts.find()
+      .sort({createdAt: -1})
       .skip(skip)
       .limit(Number(limit))
       .populate('creator', '_id username firstName imageUrl');

@@ -1,11 +1,13 @@
 import { useGetPostById } from "@/hooks/queriesAndMutations";
 import { multiFormatDateString } from "@/lib/utils";
+import { useUserContext } from "../../context/AuthProvider";
 import { Loader } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
 const PostDetails = () => {
   const { id } = useParams()
   const {data: postData, isPending} = useGetPostById(id || '');
+  const { user } = useUserContext();
   const post = postData?.data.post;
   
   return (
@@ -42,6 +44,16 @@ const PostDetails = () => {
                   </div>
                 </div>
               </Link>
+              <div className="flex-center gap-4">
+                <Link to={`/update-post/${post?._id}`}
+                className={`${user._id !== post?.creator._id && 'hidden'}`}>
+                  <img 
+                  src="/assets/icons/edit.svg" 
+                  width={24}
+                  height={24}
+                  alt="edit" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>

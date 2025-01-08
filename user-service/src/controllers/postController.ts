@@ -33,7 +33,7 @@ export const getPostById = async (req: AuthenticatedRequest, res: Response, next
   const { postId }  = req.body;
   
     try {
-      const post = await Posts.findById(postId).populate('creator', 'username firstName imageUrl');
+      const post = await Posts.findById(postId).populate('creator', '_id username firstName imageUrl');
       if (!post) {
         res.status(404).json( {message: 'Could not find post' });
         return;

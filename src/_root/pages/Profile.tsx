@@ -31,7 +31,6 @@ const Profile = () => {
   const { pathname } = useLocation();
 
   const { data: userData, isPending } = useGetUserById(id || "");
-  console.log('Current User: ', userData);
   const currentUser = userData?.data
 
   if (isPending)

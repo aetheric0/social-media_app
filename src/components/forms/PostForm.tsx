@@ -74,7 +74,6 @@ const PostForm = ({ action, post  }: PostFormProps) => {
         updatePost(postData);
         navigate(`/posts/${post?._id}`);
       }
-      console.log('Post Id', post?._id);
     } catch (error) {
       console.error("Failed to create post:", error);
     }

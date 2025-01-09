@@ -155,7 +155,6 @@ export const useGetUserById = (userId: string) => {
 
 }
 
-
 export const useGetSaved = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_SAVED_POSTS],

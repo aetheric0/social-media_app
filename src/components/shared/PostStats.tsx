@@ -20,7 +20,6 @@ const PostStats = ( {post, user }: PostStatsProps ) => {
   const { mutate: savePost, isPending: isToggling } = useSavePost();
 
 useEffect(() => {
-//  fetchLikes();
   setLikes(post.likes);
   setSaved(user.savedPosts);
 }, [post, user])
@@ -54,7 +53,6 @@ useEffect(() => {
     }
     user.savedPosts = newSaves;
     setSaved(newSaves);
-    console.log('newSaves: ', newSaves);
     savePost(post._id);
   }
   

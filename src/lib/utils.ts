@@ -1,3 +1,4 @@
+// import { savePost } from './../../user-service/src/controllers/userController';
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -56,3 +57,7 @@ export const multiFormatDateString = (timestamp: string = ""): string => {
 export const checkIsLiked = (likeList: string[], userId: string) => {
   return likeList.includes(userId);
 };
+
+export const checkIsSaved = (savedList: string[], postId: string) => {
+  return savedList.includes(postId);
+}

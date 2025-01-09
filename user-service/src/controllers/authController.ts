@@ -9,9 +9,10 @@ import mongoose from 'mongoose';
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const accountId = new mongoose.Types.ObjectId().toString();
     const { firstName, lastName, username, email, password, imageUrl} = req.body;
+    const formattedUsername = username.toLowerCase()
 
     try {
-        const existingUsername = await User.findOne({ username });
+        const existingUsername = await User.findOne({ formattedUsername });
         if (existingUsername) {
             res.status(409).json({ message: 'Username already exists' });
             return;
@@ -23,10 +24,10 @@ export const register = async (req: Request, res: Response, next: NextFunction):
             return
         }
         
-        const user = new User({ firstName, lastName, username, email, password, accountId, imageUrl });
+        const user = new User({ firstName, lastName, formattedUsername, email, password, accountId, imageUrl });
         await user.save();
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: '5m' });
         const refreshToken = jwt.sign({id: user._id}, process.env.REFRESH_SECRET!, {expiresIn: '7d'});
 
         res.cookie('token', token, {httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict'});
@@ -37,27 +38,30 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     }
 };
 
-export const login = async (req: Request, res: Response, next: NextFunction): Promise<string | any> => {
+export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { username, password } = req.body;
+    const formattedUsername = username.toLowerCase()
   
     try {
         const existingUser = await User.findOne({ 
             $or: [ 
-                { username: username }, 
-                { email: username } 
+                { username: formattedUsername }, 
+                { email: formattedUsername } 
             ]
          }); 
          
         if (!existingUser) {
             console.log('User not found');
-            return next(new AppError('Account does not exist', 404));
+            next(new AppError('Account does not exist', 404));
+            return;
         }
 
         const isPasswordValid = await bcrypt.compare(password, existingUser.password);
 
         if (!isPasswordValid) {
             console.log('Invalid password');
-            return next(new AppError('Password is Incorrect', 401));
+            next(new AppError('Password is Incorrect', 401));
+            return;
         }
 
         const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
@@ -79,7 +83,7 @@ export const logout = (req: AuthenticatedRequest, res: Response): void => {
     res.status(200).json({ message: 'Logged out successfully' });
 };
 
-export const refreshToken = (req: AuthenticatedRequest, res: Response): void => {
+export const refreshToken = (req: Request, res: Response): void => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
       res.status(401).json({ message: 'No refresh token, authorization denied' });
@@ -96,6 +100,21 @@ export const refreshToken = (req: AuthenticatedRequest, res: Response): void => 
     }
   };
 
+  export const getUsers = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const users = await User.find();
+
+        res.status(200).json({ 
+            status: 'success',
+            results: users.length,
+            users,
+        });
+    } catch(error) {
+        next(new AppError(`Error fetching users: ${error}`, 500))
+    }
+    
+};
+
   export const getCurrentUser = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         if (!req.user || (typeof req.user !== 'string' && !req.user.id)) {
@@ -105,24 +124,26 @@ export const refreshToken = (req: AuthenticatedRequest, res: Response): void => 
         
         const userId = typeof req.user === 'string' ? req.user: req.user.id;
         const user = await User.findById(userId);
+        
 
         if(!user) {
             res.status(404).json({ message: 'User not found' });
             return;
         }
+        
+        const savedPosts = user.savedPosts.map((id) => id.toString());
         res.status(200).json({
             _id: user._id,
             firstName: user.firstName,
             username: user.username,
             email: user.email,
             imageUrl: user.imageUrl,
-            bio: user.bio
+            bio: user.bio,
+            savedPosts,
         });
     } catch (error) {
         next (new AppError(`Could not retrieve current user: ${error}`, 500));
     }
   }
 
-export const protectedHandler = (req: AuthenticatedRequest, res: Response): void => {
-    res.status(200).json({ message: 'Protected route accessed', user: req.user});
-};
+

@@ -1,6 +1,7 @@
 import { Schema, model, Document} from 'mongoose';
 
 interface IPost extends Document {
+    _id: Schema.Types.ObjectId;
     creator: Schema.Types.ObjectId;
     caption: string;
     likes: Schema.Types.ObjectId[];

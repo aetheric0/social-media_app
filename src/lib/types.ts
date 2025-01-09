@@ -14,6 +14,7 @@ export type INavLink = {
     email: string;
     imageUrl: string;
     bio: string;
+    savedPosts: string[];
   };
   
   export type IUpdateUser = {
@@ -39,6 +40,7 @@ export type IPost = {
   location?: string;
   file: File[]; // Make file optional
   tags?: string[];
+  likes: string[];
   imageUrl: string; 
   imageId: string;
   creator: IUser;
@@ -47,13 +49,14 @@ export type IPost = {
 };
   
   export type IUpdatePost = {
-    postId: string;
+    _id: string;
     caption: string;
     imageId: string;
-    imageUrl: URL;
+    imageUrl: string;
     file: File[];
     location?: string;
-    tags?: string;
+    tags?: string[];
+    creator: string;
   };
   
 
@@ -74,12 +77,8 @@ export type IPost = {
     password: string;
   };
 
-  export interface PostData { // This is what the frontend deals with
-    creator: string;
-    caption: string;
-    location?: string;
-    tags?: string[];
-    imageUrl: string[];
-    imageId: string[];
-    date?: Date;
+export type ISave = {
+  _id: string;
+  user: string[];
+  post: string[];
 }

@@ -38,7 +38,6 @@ const onSubmit = async (values: z.infer<typeof SigninValidation>) => {
       const token = session.data.token;
       localStorage.setItem('token', token);
       toast({title: 'Logged in'})
-      console.log("User logged in successfully:");
     }
     const isLoggedIn = await checkAuthUser();
 
@@ -52,6 +51,7 @@ const onSubmit = async (values: z.infer<typeof SigninValidation>) => {
   } catch (error) {
     toast({
       title: "Sign in failed. Please try again", 
+      description: "Please confirm your login details",
       variant: 'destructive',
       action: <ToastAction altText='Try again'>Try again</ToastAction>,
     });

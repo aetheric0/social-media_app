@@ -4,13 +4,15 @@ import bcrypt from 'bcryptjs';
 mongoose.set('debug', true);
 
 export interface IUser extends Document {
+    _id: Schema.Types.ObjectId;
     firstName: string;
     lastName: string;
     username: string;
     email: string;
     accountId: string;
     password: string;
-    liked: Schema.Types.ObjectId,
+    liked: Schema.Types.ObjectId;
+    savedPosts:  Schema.Types.ObjectId[];
     bio: string,
     imageId: string,
     imageUrl: string,
@@ -24,6 +26,7 @@ const UserSchema: Schema = new Schema({
     accountId: {type: String, required: true},
     password: {type: String, required: true},
     liked: {type: Schema.Types.ObjectId, ref: 'Posts'},
+    savedPosts: [{ type:  Schema.Types.ObjectId, ref:'Posts', default: []}],
     bio: {type: String, maxlength: 2200},
     imageId: {type: String},
     imageUrl: {type: String, required: true},

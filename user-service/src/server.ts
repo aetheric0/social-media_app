@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser'
 import { v2 as cloudinary } from 'cloudinary';
 import { errorHandler } from './middlewares/errorHandler';
 import cors from 'cors';
+import postRoutes from './routes/postRoutes';
 
 
 cloudinary.config({
@@ -33,6 +34,7 @@ connectDB();
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/posts', postRoutes);
    
 app.use(express.urlencoded({ extended: true }));
 

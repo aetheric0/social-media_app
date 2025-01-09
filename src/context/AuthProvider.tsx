@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getCurrentUser } from "../api/auth";
+import { getCurrentUser, refreshAuthToken } from "../api/auth";
 import { IContextType, IUser } from "../lib/types";
+import axios, { AxiosError } from "axios";
 
 export const INITIAL_USER: IUser = {
   _id: "",
@@ -11,6 +12,7 @@ export const INITIAL_USER: IUser = {
   email: "",
   imageUrl: "",
   bio: "",
+  savedPosts: [],
 };
 
 const INITIAL_STATE: IContextType = {
@@ -25,9 +27,14 @@ const INITIAL_STATE: IContextType = {
 const AuthContext = createContext<IContextType>(INITIAL_STATE);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<IUser>(INITIAL_USER);
+  const [user, setUser] = useState<IUser>(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : INITIAL_USER;
+  });
   const [isLoading, setIsLoading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem("token")
+  );
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -36,7 +43,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsLoading(true); // Set loading to true before API call
       const currentAccount = await getCurrentUser();
       if (currentAccount) {
-        setUser({
+        const userData = {
           _id: currentAccount._id,
           firstName: currentAccount.firstName,
           lastName: currentAccount.lastName,
@@ -44,25 +51,48 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           email: currentAccount.email,
           imageUrl: currentAccount.imageUrl,
           bio: currentAccount.bio,
-        });
+          savedPosts: currentAccount.savedPosts || [],
+        };
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
         setIsAuthenticated(true);
         return true;
       }
     } catch (error) {
-      console.error("Authentication error:", error); // More descriptive error message
-      setIsAuthenticated(false); // Ensure isAuthenticated is false on error
+      console.error("Authentication error:", error);
+      setIsAuthenticated(false);
     } finally {
       setIsLoading(false); // Set loading to false regardless of success/failure
     }
     return false;
   };
 
+  const verifyToken = async () => {
+    try {
+      await axios.get("http://localhost:5000/api/auth/users/user", {
+        withCredentials: true,
+      });
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      if (axiosError.response && axiosError.response.status === 401) {
+        const newToken = await refreshAuthToken();
+        if (!newToken && location.pathname !== "/sign-up") {
+          navigate("/sign-in");
+        } else {
+          await checkAuthUser();
+        }
+      }
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token && location.pathname !== "/sign-up") navigate("/sign-in");
-
-    checkAuthUser();
-  }, []); // Add location to the dependency array
+    if (!token && location.pathname !== "/sign-up") {
+      navigate("/sign-in");
+    } else {
+      verifyToken();
+    }
+  }, [location.pathname]);
 
   const value = {
     user,

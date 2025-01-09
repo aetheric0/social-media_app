@@ -24,13 +24,12 @@ export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: N
         req.user = decoded;
         next();
     } catch (err) {
-        console.error('Token validation error: ', err);
 
         const error = err as JwtError;
 
         if (error.name === 'TokenExpiredError' && refreshToken) {
             try {
-                const refreshDecoded = jwt.verify(refreshToken, process.env.JWT_SECRET!) as { id: string }; 
+                const refreshDecoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET!) as { id: string };
                 const newToken = jwt.sign({ id: refreshDecoded.id }, process.env.JWT_SECRET!, { expiresIn: '1h' }); 
                 res.cookie('token', newToken, { 
                     httpOnly: true, 
@@ -42,8 +41,11 @@ export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: N
             } catch (refreshErr) {
                 console.error('Refresh token validation error:', refreshErr);
                 res.status(401).json({ message: 'Token expired, please log in again' });
+                return;
             }
+        } else {
+            res.status(401).json({ message: 'Token expired, please refresh' });
+            return;
         }
-        res.status(401).json({ message: 'Token expired, please refresh' });
     }
 }

@@ -27,7 +27,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
         const user = new User({ firstName, lastName, formattedUsername, email, password, accountId, imageUrl });
         await user.save();
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: '5m' });
         const refreshToken = jwt.sign({id: user._id}, process.env.REFRESH_SECRET!, {expiresIn: '7d'});
 
         res.cookie('token', token, {httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict'});
@@ -83,7 +83,7 @@ export const logout = (req: AuthenticatedRequest, res: Response): void => {
     res.status(200).json({ message: 'Logged out successfully' });
 };
 
-export const refreshToken = (req: AuthenticatedRequest, res: Response): void => {
+export const refreshToken = (req: Request, res: Response): void => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
       res.status(401).json({ message: 'No refresh token, authorization denied' });

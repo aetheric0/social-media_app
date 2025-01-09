@@ -24,11 +24,13 @@ export const signinAccount = async (user: {username: string, password: string}) 
 
 export const refreshAuthToken = async () => { 
   try { const response = await axios.post(
-    '/api/auth/refresh-token', 
-    {}, 
-    { withCredentials: true }); 
-    localStorage.setItem('token', response.data.token); 
-    return response.data.token; 
+        'http://localhost:5000/api/auth/refresh-token', 
+        {}, 
+        { withCredentials: true }
+      ); 
+      localStorage.setItem('token', response.data.token); 
+      
+      return response.data.token; 
   } catch (error) { 
     console.error("Error refreshing token:", error); 
     return null; 

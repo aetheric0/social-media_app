@@ -29,7 +29,6 @@ cloudinary.config({
 });
 
 export const getPostById = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
-  console.log('Request Body: ', req.body);  
   const { postId }  = req.body;
   
     try {
@@ -128,5 +127,25 @@ export const getInfinitePosts = async (req: AuthenticatedRequest, res: Response,
     });
   } catch(error) {
     next(new AppError(`Error fetching posts: ${error}`, 500));
+  }
+}
+
+export const getPostByCaption = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { searchTerm } = req.body;
+
+    if (!searchTerm) {
+      res.status(400).json({status: 'fail', message: 'Search term is required'});
+      return;
+    }
+    const posts = await Posts.find({caption: {$regex: searchTerm, $options: 'i'}}).populate('creator', '_id username firstName imageUrl');
+
+    res.status(200).json({
+      status: 'success',
+      results: posts.length,
+      posts
+    });
+  } catch (error) {
+    next(new AppError(`Error fetching posts by caption: ${error}`, 500));
   }
 }

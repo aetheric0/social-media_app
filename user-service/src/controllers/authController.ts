@@ -100,6 +100,21 @@ export const refreshToken = (req: AuthenticatedRequest, res: Response): void => 
     }
   };
 
+  export const getUsers = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const users = await User.find();
+
+        res.status(200).json({ 
+            status: 'success',
+            results: users.length,
+            users,
+        });
+    } catch(error) {
+        next(new AppError(`Error fetching users: ${error}`, 500))
+    }
+    
+};
+
   export const getCurrentUser = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
         if (!req.user || (typeof req.user !== 'string' && !req.user.id)) {
@@ -131,6 +146,4 @@ export const refreshToken = (req: AuthenticatedRequest, res: Response): void => 
     }
   }
 
-export const protectedHandler = (req: AuthenticatedRequest, res: Response): void => {
-    res.status(200).json({ message: 'Protected route accessed', user: req.user});
-};
+

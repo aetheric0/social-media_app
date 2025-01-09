@@ -165,3 +165,57 @@ export const savePost = async (req: AuthenticatedRequest, res: Response, next: N
     next (new AppError(`Error saving post: ${error}`, 500));
   }
 }
+
+export const getSaved = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+  try {
+         if (!req.user || (typeof req.user !== 'string' && !req.user.id)) {
+             res.status(401).json({ message: 'Unauthorized' });
+             return;
+         }
+         
+         const userId = typeof req.user === 'string' ? req.user: req.user.id;
+         const user = await User.findById(userId);
+         
+ 
+         if(!user) {
+             res.status(404).json({ message: 'User not found' });
+             return;
+         }
+
+         const savedPosts = user.savedPosts;
+
+         const saves = []
+
+         for (const save of savedPosts) {
+          const post = await Posts.findById(save.toString()).populate('creator', '_id imageUrl');
+          saves.push(post);
+         }
+
+         res.status(200).json({
+           status: 'success',
+           results: saves.length,
+           saves,
+         })
+ } catch (error) {
+   next(new AppError(`Error fetching posts by caption: ${error}`, 500));
+ }
+}
+
+export const getUserById = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+  const { userId }  = req.body;
+  
+    try {
+      const user = await User.findById(userId)
+      const userPosts = await Posts.find({creator: user?._id.toString()})
+      if (!user) {
+        res.status(404).json( {message: 'Could not find post' });
+        return;
+      }
+      res.status(200).json({
+        user,
+        userPosts,
+      })
+    } catch(error) {
+      next(new AppError(`Error retrieving post: ${error}`, 500)); 
+    } 
+  }

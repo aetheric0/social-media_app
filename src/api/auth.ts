@@ -198,7 +198,6 @@ export async function getInfinitePosts({ pageParam }: {pageParam: number}) {
       { params: {page: pageParam, limit: 10 }, 
       withCredentials: true,
     });
-    console.log('API Response: ', queries.data);
     return queries.data;
   } catch(error) {
     console.error('Error in API Call: ', error);
@@ -216,6 +215,48 @@ export async function searchPosts(searchTerm: string) {
     if (!posts) throw Error;
 
     return posts;
+  } catch(error) {
+    console.log(error);
+  }
+}
+
+export async function getUsers() {
+  try {
+    const users = await axios.get(
+      'http://localhost:5000/api/auth/users',
+      {withCredentials: true},
+    )
+    if (!users) throw Error;
+
+    return users;
+  } catch(error) {
+    console.log(error);
+  }
+}
+
+export async function getUserById(userId: string) {
+  
+  try {
+    const user = await axios.post(
+      `http://localhost:5000/api/user/${userId}`,
+      { userId },
+      { withCredentials: true },
+    );
+    return user;
+  } catch(error) {
+    console.log(error);
+  }
+}
+
+export async function getSaved() {
+  try {
+    const savedPosts = await axios.get(
+      'http://localhost:5000/api/user/saved',
+      {withCredentials: true},
+    )
+    if (!savedPosts) throw Error;
+
+    return savedPosts;
   } catch(error) {
     console.log(error);
   }

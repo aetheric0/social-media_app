@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getCurrentUser } from '../api/auth';
+import { getCurrentUser, refreshAuthToken } from '../api/auth';
 import { IContextType, IUser } from '../lib/types';
+import axios, { AxiosError } from 'axios';
 
 export const INITIAL_USER: IUser = {
   _id: '',
@@ -63,8 +64,26 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const token = localStorage.getItem('token');
       if (!token && location.pathname !== '/sign-up') navigate('/sign-in');
 
-      checkAuthUser();
-    }, []); // Add location to the dependency array
+      const verifyToken = async () => { 
+        try { 
+          await axios.get(
+            '/api/auth/users/user', 
+            { withCredentials: true }
+          ); 
+        } catch (error) {
+          const axiosError = error as AxiosError;
+          if (axiosError.response && axiosError.response.status === 401) {
+            const newToken = await refreshAuthToken(); 
+            if (!newToken) { 
+              navigate('/sign-in'); 
+            } else { 
+              await checkAuthUser(); 
+            } 
+          } 
+        }
+      };
+      verifyToken();
+    }, []);
 
   const value = {
     user,

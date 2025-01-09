@@ -75,7 +75,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const axiosError = error as AxiosError;
       if (axiosError.response && axiosError.response.status === 401) {
         const newToken = await refreshAuthToken(); 
-        if (!newToken) { 
+        if (!newToken && location.pathname !== '/sign-up') { 
           navigate('/sign-in'); 
         } else { 
           await checkAuthUser(); 

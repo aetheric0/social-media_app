@@ -1,15 +1,16 @@
-import { useState, useCallback } from "react";
+// src/components/PostForm.tsx
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { IUpdatePost } from "../../lib/types";
+import { IUpdatePost } from '../../lib/types';
 import { useNavigate } from "react-router-dom";
 import { PostValidation } from "@/lib/validation/index";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormField, // Keep this import
+  FormField,
   FormItem,
   FormLabel,
   FormMessage,
@@ -20,19 +21,18 @@ import FileUploader from "@/components/shared/FileUploader";
 import { useCreatePost, useUpdatePost } from "@/hooks/queriesAndMutations";
 import { useUserContext } from "../../context/AuthProvider";
 
+
 type PostFormProps = {
   post?: IUpdatePost;
-  action: "Create" | "Update";
+  action: 'Create' | 'Update';
 };
 
-const PostForm = ({ action, post }: PostFormProps) => {
+const PostForm = ({ action, post  }: PostFormProps) => {
   const { mutate: createPost, isPending: isLoadingCreate } = useCreatePost();
-  const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
-    useUpdatePost();
+  const { mutateAsync: updatePost, isPending: isLoadingUpdate} = useUpdatePost();
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const { user } = useUserContext();
   const navigate = useNavigate();
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const form = useForm<z.infer<typeof PostValidation>>({
     resolver: zodResolver(PostValidation),
@@ -40,42 +40,37 @@ const PostForm = ({ action, post }: PostFormProps) => {
       caption: post ? post?.caption : "",
       file: [],
       location: post ? post?.location : "",
-      tags: post && post.tags ? post.tags.join(",") : "",
+      tags: (post && post.tags) ? post.tags.join(",") : "",
     },
   });
-
-  const handleFilesChange = useCallback((files: File[]) => {
-    setSelectedFiles(files);
-  }, []);
 
   const onSubmit = async (values: z.infer<typeof PostValidation>) => {
     try {
       const tagsArray = values.tags
         ? values.tags.split(",").map((tag) => tag.trim())
         : [];
-
-      if (action === "Create" && uploadedFiles.length === 0) {
+      
+      if (action === 'Create' && uploadedFiles.length === 0) {
         throw new Error("No files uploaded");
       }
-
+  
       const postData: Partial<IUpdatePost> = {
-        _id: action === "Update" ? post?._id : undefined,
+        _id: action === 'Update' ? post?._id : undefined,
         caption: values.caption,
         location: values.location,
         tags: tagsArray,
-        file: uploadedFiles.length > 0 ? uploadedFiles : post?.file || [],
+        file: uploadedFiles.length > 0 ? uploadedFiles : post?.file || [], 
         imageUrl: "",
-        imageId:
-          uploadedFiles.length > 0
-            ? `${uploadedFiles[0].name}-${Date.now()}`
-            : post?.imageId || "",
-        creator: user?._id || "",
+        imageId: uploadedFiles.length > 0 
+        ? `${uploadedFiles[0].name}-${Date.now()}` 
+        : post?.imageId || '',
+        creator: user?._id || '',
       };
-
-      if (action === "Create") {
+      
+      if (action === 'Create') {
         createPost(postData);
-        navigate("/");
-      } else {
+        navigate('/');
+      } else { 
         updatePost(postData);
         navigate(`/posts/${post?._id}`);
       }
@@ -83,6 +78,7 @@ const PostForm = ({ action, post }: PostFormProps) => {
       console.error("Failed to create post:", error);
     }
   };
+ 
 
   return (
     <Form {...form}>
@@ -116,7 +112,7 @@ const PostForm = ({ action, post }: PostFormProps) => {
               <FormControl>
                 <FileUploader
                   fieldChange={setUploadedFiles}
-                  mediaUrl={post ? post.imageUrl : null}
+                  mediaUrl={post ? post.imageUrl: null}
                 />
               </FormControl>
               <FormMessage className="shad-form_message" />
@@ -157,20 +153,19 @@ const PostForm = ({ action, post }: PostFormProps) => {
           )}
         />
         <div className="flex gap-4 items-center justify-end">
-          <Button
-            type="button"
+          <Button 
+            type="button" 
             className="shad-button_dark_4"
-            onClick={() => navigate("/")}
-          >
+            onClick={() => navigate('/')}
+          >  
             Cancel
           </Button>
           <Button
             type="submit"
             className="shad-button_primary whitespace-nowrap"
-            disabled={isLoadingCreate || isLoadingUpdate}
-          >
-            {isLoadingCreate || (isLoadingUpdate && "Loading...")}
-            {action} Post
+              disabled = {isLoadingCreate || isLoadingUpdate} >
+                {isLoadingCreate || isLoadingUpdate && 'Loading...'}
+                {action} Post
           </Button>
         </div>
       </form>

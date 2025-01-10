@@ -24,7 +24,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
             return
         }
         
-        const user = new User({ firstName, lastName, formattedUsername, email, password, accountId, imageUrl });
+        const user = new User({ firstName, lastName, username: formattedUsername, email, password, accountId, imageUrl });
         await user.save();
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, { expiresIn: '5m' });

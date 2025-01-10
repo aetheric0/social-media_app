@@ -105,7 +105,7 @@ export const updatePost = [
 
 export const getInfinitePosts = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page = 1, limit =  10} = req.query;
+    const { page = 1, limit =  10 } = req.query;
 
     const skip = (Number(page) - 1) * Number(limit);
 

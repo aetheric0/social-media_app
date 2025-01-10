@@ -15,7 +15,7 @@ const Home = () => {
     return (
       <div className="flex flex-1">
         <div className="home-container">
-          <p className="body-medium text-light-1">For some Reason Feed Could Not Be Retrieved. You Might want to Refresh or Try Again Later</p>
+          <p className="body-medium text-light-1">For some Reason Feed Could Not Be Retrieved. You might want to Refresh or Try Again Later</p>
         </div>
         <div className="home-creators">
           <p className="body-medium text-light-1">Top Creators Could Not Be Retrieved. An Unknown Error Occured.</p>

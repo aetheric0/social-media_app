@@ -17,7 +17,7 @@ import { useUserContext } from "../../context/AuthProvider";
 
 const SignupForm = () => {
   const { toast } = useToast();
-  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const { checkAuthUser } = useUserContext();
   const { mutateAsync: createUser, isPending: isCreatingUser } = useCreateAccount();
   const navigate = useNavigate();
 
@@ -41,7 +41,7 @@ const SignupForm = () => {
         const token = newUser.data.token;
         localStorage.setItem('token', token);
         toast({title: "User created successfully!"});
-        console.log("User created successfully:");
+        console.log("User created successfully!");
       }
 
       const isLoggedIn = await checkAuthUser();

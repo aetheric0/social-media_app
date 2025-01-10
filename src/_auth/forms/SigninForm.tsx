@@ -41,17 +41,20 @@ const onSubmit = async (values: z.infer<typeof SigninValidation>) => {
     }
     const isLoggedIn = await checkAuthUser();
 
-      if(isLoggedIn) {
-        form.reset();
-        navigate('/');
-      } else {
-        return toast({'title': 'Sign up failed. Please try again.' });
+    if(isLoggedIn) {
+      form.reset();
+      navigate('/');
+    } else {
+        return toast({
+          title: 'Sign in failed. Please try again.', 
+          description: "Please confirm your login details",
+          variant: 'destructive', 
+        });
       }
 
   } catch (error) {
     toast({
-      title: "Sign in failed. Please try again", 
-      description: "Please confirm your login details",
+      title: "Something went wrong", 
       variant: 'destructive',
       action: <ToastAction altText='Try again'>Try again</ToastAction>,
     });

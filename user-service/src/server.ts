@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
+import path from 'path'; // Import path module
 import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
@@ -12,23 +13,14 @@ import postRoutes from './routes/postRoutes';
 
 const app = express();
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://devlounge.vercel.app'
-];
-
+// Allow CORS for the origin hosting the frontend
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin, like mobile apps or curl requests
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
+  origin: ['http://localhost:5173', 'https://devlounge.vercel.app'],
   credentials: true,
 }));
+
+// Serve static files from the frontend build directory
+app.use(express.static(path.join(__dirname, '..', 'frontend', 'dist')));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -40,6 +32,11 @@ app.use('/api/user', userRoutes);
 app.use('/api/posts', postRoutes);
 
 app.use(express.urlencoded({ extended: true }));
+
+// Handle all other routes by serving the frontend index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'frontend', 'dist', 'index.html'));
+});
 
 app.use(errorHandler);
 

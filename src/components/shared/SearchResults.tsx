@@ -4,12 +4,13 @@ import GridPostList from "./GridPostList";
 
 type SearchResultsProps = {
   isSearchFetching: boolean;
-  searchedPosts: IPost
+  searchedPosts: { posts: IPost[]}
 }
 const SearchResults = ({ isSearchFetching, searchedPosts}: SearchResultsProps) => {
   if(isSearchFetching) return <Loader />
 
   if(searchedPosts && searchedPosts.posts.length > 0) {
+    console.log("searchedPosts:", searchedPosts);
     return (
       <GridPostList posts={searchedPosts.posts}/>
     )

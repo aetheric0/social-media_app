@@ -14,7 +14,7 @@ import postRoutes from './routes/postRoutes';
 const app = express();
 
 // Set up dynamic CORS based on environment variables
-const allowedOrigins = [process.env.CORS_ORIGIN, 'devlounge.vercel.app'];
+const allowedOrigins = [process.env.CORS_ORIGIN, 'devlounge.vercel.app', 'test-origin'];
 
 app.use(cors({
   origin: function (origin, callback) {

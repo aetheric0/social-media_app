@@ -28,11 +28,9 @@ export type INavLink = {
   
   export type INewPost = {
     caption: string;
-    location?: string;
-    file: File[]; // Make file optional
+    location?: string; // Make file optional
     tags?: string[];
-    imageUrl: string; 
-    imageId: string;
+    files: File[];
     creator: string;
 };
 

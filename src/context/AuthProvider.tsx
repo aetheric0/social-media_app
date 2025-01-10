@@ -1,17 +1,17 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { getCurrentUser, refreshAuthToken } from '../api/auth';
-import { IContextType, IUser } from '../lib/types';
-import axios, { AxiosError } from 'axios';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { getCurrentUser, refreshAuthToken } from "../api/auth";
+import { IContextType, IUser } from "../lib/types";
+import axios, { AxiosError } from "axios";
 
 export const INITIAL_USER: IUser = {
-  _id: '',
-  firstName: '',
-  lastName: '',
-  username: '',
-  email: '',
-  imageUrl: '',
-  bio: '',
+  _id: "",
+  firstName: "",
+  lastName: "",
+  username: "",
+  email: "",
+  imageUrl: "",
+  bio: "",
   savedPosts: [],
 };
 
@@ -28,11 +28,13 @@ const AuthContext = createContext<IContextType>(INITIAL_STATE);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<IUser>(() => {
-    const savedUser = localStorage.getItem('user');
+    const savedUser = localStorage.getItem("user");
     return savedUser ? JSON.parse(savedUser) : INITIAL_USER;
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem("token")
+  );
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -52,7 +54,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           savedPosts: currentAccount.savedPosts || [],
         };
         setUser(userData);
-        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem("user", JSON.stringify(userData));
         setIsAuthenticated(true);
         return true;
       }
@@ -65,29 +67,28 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return false;
   };
 
-  const verifyToken = async () => { 
-    try { 
-      await axios.get(
-        'http://localhost:5000/api/auth/users/user', 
-        { withCredentials: true }
-      ); 
+  const verifyToken = async () => {
+    try {
+      await axios.get("http://localhost:5000/api/auth/users/user", {
+        withCredentials: true,
+      });
     } catch (error) {
       const axiosError = error as AxiosError;
       if (axiosError.response && axiosError.response.status === 401) {
-        const newToken = await refreshAuthToken(); 
-        if (!newToken && location.pathname !== '/sign-up') { 
-          navigate('/sign-in'); 
-        } else { 
-          await checkAuthUser(); 
-        } 
-      } 
+        const newToken = await refreshAuthToken();
+        if (!newToken && location.pathname !== "/sign-up") {
+          navigate("/sign-in");
+        } else {
+          await checkAuthUser();
+        }
+      }
     }
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token && location.pathname !== '/sign-up') {
-      navigate('/sign-in');
+    const token = localStorage.getItem("token");
+    if (!token && location.pathname !== "/sign-up") {
+      navigate("/sign-in");
     } else {
       verifyToken();
     }
@@ -102,11 +103,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkAuthUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

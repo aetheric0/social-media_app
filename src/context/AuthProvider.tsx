@@ -68,7 +68,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const verifyToken = async () => { 
     try { 
       await axios.get(
-        'http://localhost:5000/api/auth/users/user', 
+        '`${apiBaseUrl}`/api/auth/users/user', 
         { withCredentials: true }
       ); 
     } catch (error) {

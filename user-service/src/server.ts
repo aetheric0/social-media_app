@@ -13,14 +13,10 @@ import postRoutes from './routes/postRoutes';
 
 const app = express();
 
-// Log the value of CORS_ORIGIN for debugging
-console.log('CORS_ORIGIN:', process.env.CORS_ORIGIN);
-
 const allowedOrigins = [process.env.CORS_ORIGIN, 'https://devlounge.vercel.app', 'http://localhost:5173'];
 
 app.use(cors({
   origin: function (origin, callback) {
-    console.log('Origin:', origin); // Log the origin of the request
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {

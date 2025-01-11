@@ -33,7 +33,12 @@ export const refreshAuthToken = async () => {
   try { const response = await axios.post(
         `${apiBaseUrl}/api/auth/refresh-token`, 
         {}, 
-        { withCredentials: true }
+        { 
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+         }
       ); 
       localStorage.setItem('token', response.data.token); 
       
@@ -49,7 +54,10 @@ export async function getCurrentUser() {
     const currentUser = await axios.get(
       `${apiBaseUrl}/api/auth/users/user`, 
       { 
-        withCredentials: true
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }
     );
     if (!currentUser) throw Error;
@@ -66,10 +74,14 @@ export async function signOutAccount() {
       `${apiBaseUrl}/api/auth/logout`,
       {}, 
       {
-        withCredentials: true
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }
     );
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
 
     return session;
 
@@ -122,7 +134,12 @@ export const createPost = async (postData: Partial<IUpdatePost>) => {
 export async function getRecentPosts() {
   const posts = await axios.get(
     `${apiBaseUrl}/api/user/get-recent-posts`, 
-    { withCredentials: true}
+    { 
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
   );
 
   if (!posts) throw Error;
@@ -219,6 +236,9 @@ export async function getInfinitePosts({ pageParam }: {pageParam: number}) {
       `${apiBaseUrl}/api/posts/load-posts`,
       { params: {page: pageParam, limit: 10 }, 
       withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
     return queries.data;
   } catch(error) {

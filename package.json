@@ -29,7 +29,6 @@
     "streamifier": "^0.1.1",
     "tailwind-merge": "^2.5.5",
     "uuid": "^11.0.2",
-    "vercel": "^39.2.6",
     "zod": "^3.23.8"
   },
   "devDependencies": {

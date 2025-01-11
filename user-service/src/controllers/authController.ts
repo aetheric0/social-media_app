@@ -12,7 +12,7 @@ export const register = async (req: Request, res: Response, next: NextFunction):
     const formattedUsername = username.toLowerCase()
 
     try {
-        const existingUsername = await User.findOne({ formattedUsername });
+        const existingUsername = await User.findOne({ username: formattedUsername });
         if (existingUsername) {
             res.status(409).json({ message: 'Username already exists' });
             return;

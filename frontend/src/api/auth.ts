@@ -19,7 +19,12 @@ export const signinAccount = async (user: {username: string, password: string}) 
   const newUser = { ...user };
   const response = await axios.post(
     `${apiBaseUrl}/api/auth/login`,
-    newUser, { withCredentials: true }
+    newUser, 
+    { withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+     },
   );
   return response;
 }

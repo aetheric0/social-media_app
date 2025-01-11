@@ -39,7 +39,9 @@ const SignupForm = () => {
       const newUser = await createUser(values);
       if (newUser) {
         const token = newUser.data.token;
+        const refreshToken = newUser.data.refreshToken
         localStorage.setItem('token', token);
+        localStorage.setItem('refreshToken', refreshToken);
         toast({title: "User created successfully!"});
         console.log("User created successfully!");
       }

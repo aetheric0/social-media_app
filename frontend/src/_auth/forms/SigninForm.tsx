@@ -36,7 +36,9 @@ const onSubmit = async (values: z.infer<typeof SigninValidation>) => {
     });
     if (session) {
       const token = session.data.token;
+      const refreshToken = session.data.refreshToken;
       localStorage.setItem('token', token);
+      localStorage.setItem('refreshToken', refreshToken);
       toast({title: 'Logged in'})
     }
     const isLoggedIn = await checkAuthUser();

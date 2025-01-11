@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { INewUser, IUpdatePost } from '../lib/types';
 
-const apiBaseUrl = "https://devlounge.vercel.app"
+const apiBaseUrl = "http://devlounge.up.railway.app"
 
 
 export const createUser = async (user: INewUser) => {

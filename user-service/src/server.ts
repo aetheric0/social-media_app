@@ -14,46 +14,39 @@ import postRoutes from './routes/postRoutes';
 
 const app = express();
 
-const allowedOrigins: string[] = [
-  process.env.CORS_ORIGIN!,
-  'https://devlounge.vercel.app',
-  'http://localhost:5173'
-];
-
-console.log('Allowed Origins:', allowedOrigins);
-
-const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+app.use(cors({
+  origin: 'https://devlounge.vercel.app',
   credentials: true,
-  optionsSuccessStatus: 204,
-};
-
-// Apply CORS middleware to all routes
-app.use(cors(corsOptions));
-
-// Custom middleware to set CORS headers explicitly
-const setCorsHeaders = (req: Request, res: Response, next: NextFunction): void => {
-  res.header('Access-Control-Allow-Origin', process.env.CORS_ORIGIN!);
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  if (req.method === 'OPTIONS') {
-    res.status(204).end();
-  } else {
-    next();
   }
-};
+));
+// const allowedOrigins: string[] = [
+//   process.env.CORS_ORIGIN!,
+//   'https://devlounge.vercel.app',
+//   'http://localhost:5173'
+// ];
 
-app.use(setCorsHeaders);
+// console.log('Allowed Origins:', allowedOrigins);
+
+// const corsOptions = {
+//   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+//     if (!origin) return callback(null, true);
+//     if (allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   credentials: true,
+//   optionsSuccessStatus: 204,
+// };
+
+// // Apply CORS middleware to all routes
+// app.use(cors(corsOptions));
+
+// // Handle OPTIONS preflight requests
+// app.options('*', cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());

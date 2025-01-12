@@ -8,35 +8,33 @@ import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import cookieParser from 'cookie-parser';
 import { errorHandler } from './middlewares/errorHandler';
-import cors from 'cors';
+import cors, { CorsOptions, CorsOptionsDelegate } from 'cors'; // Import CorsOptions and CorsOptionsDelegate for typing
 import postRoutes from './routes/postRoutes';
 
 const app = express();
 
-const allowedOrigins = [process.env.CORS_ORIGIN, 'https://devlounge.netlify.app', 'http://localhost:5173'];
+const allowedOrigins: string[] = [process.env.CORS_ORIGIN!, 'https://devlounge.netlify.app', 'http://localhost:5173'];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error('Not allowed by CORS'))
     }
   },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-}));
+  optionsSuccessStatus: 204,
+};
+// Apply CORS middleware to all routes
+app.use(cors(corsOptions));
 
 // Handle OPTIONS preflight requests
-app.options('*', cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-}));
+app.options('*', cors(corsOptions));
+
 
 app.use(express.json());
 app.use(cookieParser());

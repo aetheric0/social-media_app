@@ -15,6 +15,8 @@ const app = express();
 
 const allowedOrigins: string[] = [process.env.CORS_ORIGIN!, 'https://devlounge.netlify.app', 'http://localhost:5173'];
 
+console.log('Allowed Origins:', allowedOrigins);
+
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     if (!origin) return callback(null, true);

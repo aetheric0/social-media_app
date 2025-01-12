@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const authMiddleware_1 = require("./../middlewares/authMiddleware");
+const express_1 = require("express");
+const userController_1 = require("../controllers/userController");
+const router = (0, express_1.Router)();
+router.post('/create-post', authMiddleware_1.authMiddleware, userController_1.createPost);
+router.get('/get-recent-posts', authMiddleware_1.authMiddleware, userController_1.getRecentPosts);
+router.post('/like-post', authMiddleware_1.authMiddleware, userController_1.likePost);
+router.post('/save-post', authMiddleware_1.authMiddleware, userController_1.savePost);
+router.post('/:id', authMiddleware_1.authMiddleware, userController_1.getUserById);
+router.get('/saved', authMiddleware_1.authMiddleware, userController_1.getSaved);
+exports.default = router;

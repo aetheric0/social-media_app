@@ -1,2 +1,5 @@
 .vercel
 /user-service/.env
+
+# Local Netlify folder
+.netlify

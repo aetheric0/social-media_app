@@ -1,19 +1,24 @@
 import dotenv from 'dotenv';
 dotenv.config();
+console.log('Environment Variables:', process.env); // Log all environment variables
 
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import cookieParser from 'cookie-parser';
 import { errorHandler } from './middlewares/errorHandler';
-import cors, { CorsOptions, CorsOptionsDelegate } from 'cors'; // Import CorsOptions and CorsOptionsDelegate for typing
+import cors from 'cors';
 import postRoutes from './routes/postRoutes';
 
 const app = express();
 
-const allowedOrigins: string[] = [process.env.CORS_ORIGIN!, 'https://devlounge.netlify.app', 'http://localhost:5173'];
+const allowedOrigins: string[] = [
+  process.env.CORS_ORIGIN!,
+  'https://devlounge.vercel.app',
+  'http://localhost:5173'
+];
 
 console.log('Allowed Origins:', allowedOrigins);
 
@@ -23,7 +28,7 @@ const corsOptions = {
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'))
+      callback(new Error('Not allowed by CORS'));
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -31,12 +36,24 @@ const corsOptions = {
   credentials: true,
   optionsSuccessStatus: 204,
 };
+
 // Apply CORS middleware to all routes
 app.use(cors(corsOptions));
 
-// Handle OPTIONS preflight requests
-app.options('*', cors(corsOptions));
+// Custom middleware to set CORS headers explicitly
+const setCorsHeaders = (req: Request, res: Response, next: NextFunction): void => {
+  res.header('Access-Control-Allow-Origin', process.env.CORS_ORIGIN!);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+  } else {
+    next();
+  }
+};
 
+app.use(setCorsHeaders);
 
 app.use(express.json());
 app.use(cookieParser());

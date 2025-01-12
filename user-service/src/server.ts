@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
-import path from 'path';
 import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
@@ -13,40 +12,26 @@ import postRoutes from './routes/postRoutes';
 
 const app = express();
 
-// CORS configuration
-const corsOptions = {
+app.use(express.json());
+app.use(cookieParser());
+
+app.use(cors({
   origin: 'https://devlounge.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-  optionsSuccessStatus: 204,
-};
-
-app.options('*', cors(corsOptions));
-// Apply CORS middleware to all routes
-app.use(cors(corsOptions));
+}));
 
 // Handle OPTIONS preflight requests
-
-
-// Other middlewares
-app.use(express.json());
-app.use(cookieParser());
+app.options('*', cors());
 
 connectDB();
 
-// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/posts', postRoutes);
 
 app.use(express.urlencoded({ extended: true }));
-
-app.use(express.static(path.join(__dirname, '..', 'frontend', 'dist')));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'frontend', 'dist', 'index.html'));
-});
 
 app.use(errorHandler);
 

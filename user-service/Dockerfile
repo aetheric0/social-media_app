@@ -20,7 +20,7 @@ RUN npm install -g typescript
 RUN tsc
 
 # Expose the port the app runs on.
-EXPOSE 5000
+EXPOSE 8080
 
 # Run the application.
 CMD ["node", "dist/server.js"]

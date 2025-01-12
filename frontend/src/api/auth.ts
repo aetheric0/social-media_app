@@ -5,19 +5,19 @@ export const createUser = async (user: INewUser) => {
   const initials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
   const avatarUrl = `https://ui-avatars.com/api/?name=${initials}`;
   const newUser = { ...user, imageUrl: avatarUrl };
-  const response = await apiClient.post('/auth/register', newUser);
+  const response = await apiClient.post('/api/auth/register', newUser);
   return response;
 };
 
 export const signinAccount = async (user: { username: string, password: string }) => {
   const newUser = { ...user };
-  const response = await apiClient.post('/auth/login', newUser);
+  const response = await apiClient.post('/api/auth/login', newUser);
   return response;
 }
 
 export const refreshAuthToken = async () => {
   try {
-    const response = await apiClient.post('/auth/refresh-token');
+    const response = await apiClient.post('/api/auth/refresh-token');
     localStorage.setItem('token', response.data.token);
     return response.data.token;
   } catch (error) {
@@ -28,7 +28,7 @@ export const refreshAuthToken = async () => {
 
 export const getCurrentUser = async () => {
   try {
-    const currentUser = await apiClient.get('/auth/users/user');
+    const currentUser = await apiClient.get('/api/auth/users/user');
     if (!currentUser) throw new Error("No current user");
     return currentUser.data;
   } catch (error) {
@@ -38,7 +38,7 @@ export const getCurrentUser = async () => {
 
 export const signOutAccount = async () => {
   try {
-    const session = await apiClient.post('/auth/logout');
+    const session = await apiClient.post('/api/auth/logout');
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     return session;
@@ -73,7 +73,7 @@ export const createPost = async (postData: Partial<IUpdatePost>) => {
   }
 
   try {
-    const response = await apiClient.post('/user/create-post', formData, {
+    const response = await apiClient.post('/api/user/create-post', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -87,14 +87,14 @@ export const createPost = async (postData: Partial<IUpdatePost>) => {
 };
 
 export const getRecentPosts = async () => {
-  const posts = await apiClient.get('/user/get-recent-posts');
+  const posts = await apiClient.get('/api/user/get-recent-posts');
   if (!posts) throw new Error("No posts found");
   return posts.data;
 }
 
 export const likePost = async (postId: string) => {
   try {
-    const updatedPost = await apiClient.post('/user/like-post', { postId });
+    const updatedPost = await apiClient.post('/api/user/like-post', { postId });
     if (!updatedPost) throw new Error("Failed to like post");
     return updatedPost.data;
   } catch (error) {
@@ -105,7 +105,7 @@ export const likePost = async (postId: string) => {
 
 export const savePost = async (postId: string) => {
   try {
-    const updatedPost = await apiClient.post('/user/save-post', { post: postId });
+    const updatedPost = await apiClient.post('/api/user/save-post', { post: postId });
     if (!updatedPost) throw new Error("Failed to save post");
     updatedPost.data.postId = postId;
     return updatedPost.data;
@@ -116,7 +116,7 @@ export const savePost = async (postId: string) => {
 
 export const getPostById = async (postId: string) => {
   try {
-    const post = await apiClient.post('/posts/get-post-by-id', { postId });
+    const post = await apiClient.post('/api/posts/get-post-by-id', { postId });
     return post.data;
   } catch (error) {
     console.log(error);
@@ -146,7 +146,7 @@ export const updatePost = async (postData: Partial<IUpdatePost>) => {
   }
 
   try {
-    const response = await apiClient.put(`/posts/${postData._id}`, formData, {
+    const response = await apiClient.put(`/api/posts/${postData._id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -161,7 +161,7 @@ export const updatePost = async (postData: Partial<IUpdatePost>) => {
 
 export const getInfinitePosts = async ({ pageParam }: { pageParam: number }) => {
   try {
-    const queries = await apiClient.get('/posts/load-posts', { params: { page: pageParam, limit: 10 } });
+    const queries = await apiClient.get('/api/posts/load-posts', { params: { page: pageParam, limit: 10 } });
     return queries.data;
   } catch (error) {
     console.error('Error in API Call: ', error);
@@ -171,7 +171,7 @@ export const getInfinitePosts = async ({ pageParam }: { pageParam: number }) => 
 
 export const searchPosts = async (searchTerm: string) => {
   try {
-    const posts = await apiClient.post('/posts/get-post-by-caption', { searchTerm });
+    const posts = await apiClient.post('/api/posts/get-post-by-caption', { searchTerm });
     if (!posts) throw new Error("No posts found");
     return posts.data;
   } catch (error) {
@@ -181,7 +181,7 @@ export const searchPosts = async (searchTerm: string) => {
 
 export const getUsers = async () => {
   try {
-    const users = await apiClient.get('/auth/users');
+    const users = await apiClient.get('/api/auth/users');
     if (!users) throw new Error("No users found");
     return users.data;
   } catch (error) {
@@ -191,7 +191,7 @@ export const getUsers = async () => {
 
 export const getUserById = async (userId: string) => {
   try {
-    const user = await apiClient.post(`/user/${userId}`, { userId });
+    const user = await apiClient.post(`/api/user/${userId}`, { userId });
     return user.data;
   } catch (error) {
     console.log(error);
@@ -200,7 +200,7 @@ export const getUserById = async (userId: string) => {
 
 export const getSaved = async () => {
   try {
-    const savedPosts = await apiClient.get('/user/saved');
+    const savedPosts = await apiClient.get('/api/user/saved');
     if (!savedPosts) throw new Error("No saved posts found");
     return savedPosts.data;
   } catch (error) {

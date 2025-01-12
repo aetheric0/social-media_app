@@ -13,6 +13,7 @@ import postRoutes from './routes/postRoutes';
 
 const app = express();
 
+// CORS configuration
 const corsOptions = {
   origin: 'https://devlounge.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -21,17 +22,20 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
+app.options('*', cors(corsOptions));
 // Apply CORS middleware to all routes
 app.use(cors(corsOptions));
 
 // Handle OPTIONS preflight requests
-app.options('*', cors(corsOptions));
 
+
+// Other middlewares
 app.use(express.json());
 app.use(cookieParser());
 
 connectDB();
 
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/posts', postRoutes);

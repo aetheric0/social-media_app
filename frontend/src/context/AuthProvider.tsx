@@ -2,7 +2,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getCurrentUser, refreshAuthToken } from '../api/auth';
 import { IContextType, IUser } from '../lib/types';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
+import apiClient from '@/api/apiClient';
 
 export const INITIAL_USER: IUser = {
   _id: '',
@@ -67,8 +68,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const verifyToken = async () => { 
     try { 
-      await axios.get(
-        '`${apiBaseUrl}`/api/auth/users/user', 
+      await apiClient.get(
+        '/api/auth/users/user', 
         { withCredentials: true }
       ); 
     } catch (error) {

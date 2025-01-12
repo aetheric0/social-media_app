@@ -6,7 +6,7 @@ import { IUser } from '@/lib/types';
 
 const AllUsers = () => {
   const { data : usersData, isPending: isLoadingUsers } = useGetUsers();
-      const users = usersData?.data?.users
+      const users = usersData?.users
     
     return (
       <div className="common-container">

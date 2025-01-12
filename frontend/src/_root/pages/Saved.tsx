@@ -4,7 +4,7 @@ import Loader from '@/components/shared/Loader';
 
 const Saved = () => {
   const { data: savedData, isPending: isLoadingSaves } = useGetSaved();
-  const saves = savedData?.data.saves;
+  const saves = savedData?.saves;
   
   return (
     <div className="saved-container">

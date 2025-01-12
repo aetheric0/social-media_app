@@ -6,10 +6,10 @@ import { IPost, IUser } from "@/lib/types";
 
 const Home = () => {
   const { data: postsData, isPending: isPostLoading, isError: isErrorPosts } = useGetRecentPosts();
-  const posts = postsData?.data?.posts;
+  const posts = postsData?.posts;
 
   const {data: usersData, isLoading: isUserLoading, isError: isErrorUsers} = useGetUsers();
-  const users = usersData?.data?.users
+  const users = usersData?.users
 
   if (isErrorPosts || isErrorUsers) {
     return (

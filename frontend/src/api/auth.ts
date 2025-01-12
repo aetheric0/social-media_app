@@ -87,7 +87,7 @@ export const createPost = async (postData: Partial<IUpdatePost>) => {
 };
 
 export const getRecentPosts = async () => {
-  const posts = await apiClient.get('/api/user/get-recent-posts');
+  const posts = await apiClient.get('/api/auth/users/user/get-recent-posts');
   if (!posts) throw new Error("No posts found");
   return posts.data;
 }

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiBaseUrl = "https://devlounge.up.railway.app";
+const apiBaseUrl = "https://devlounge.onrender.com";
 
 const apiClient = axios.create({
     baseURL: apiBaseUrl,

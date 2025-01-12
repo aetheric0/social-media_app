@@ -1,8 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
-console.log('Environment Variables:', process.env); // Log all environment variables
 
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 import path from 'path';
 import connectDB from './config/db';
 import authRoutes from './routes/authRoutes';
@@ -14,39 +13,19 @@ import postRoutes from './routes/postRoutes';
 
 const app = express();
 
-app.use(cors({
+const corsOptions = {
   origin: 'https://devlounge.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-  }
-));
-// const allowedOrigins: string[] = [
-//   process.env.CORS_ORIGIN!,
-//   'https://devlounge.vercel.app',
-//   'http://localhost:5173'
-// ];
+  optionsSuccessStatus: 204,
+};
 
-// console.log('Allowed Origins:', allowedOrigins);
+// Apply CORS middleware to all routes
+app.use(cors(corsOptions));
 
-// const corsOptions = {
-//   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-//     if (!origin) return callback(null, true);
-//     if (allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-//   credentials: true,
-//   optionsSuccessStatus: 204,
-// };
-
-// // Apply CORS middleware to all routes
-// app.use(cors(corsOptions));
-
-// // Handle OPTIONS preflight requests
-// app.options('*', cors(corsOptions));
+// Handle OPTIONS preflight requests
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());

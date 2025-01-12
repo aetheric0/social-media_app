@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const apiBaseUrl = "https://user-service-topaz.vercel.app";
+const apiBaseUrl = "https://devlounge.up.railway.app";
 
 const apiClient = axios.create({
     baseURL: apiBaseUrl,

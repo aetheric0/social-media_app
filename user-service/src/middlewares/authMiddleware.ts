@@ -11,8 +11,9 @@ interface JwtError extends JwtPayload {
 }
 
 export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
-    const token = req.cookies.token;
+    const token = req.headers['authorization']?.split(' ')[1];
     const refreshToken = req.cookies.refreshToken;
+    console.log('Received token:', token);
 
     if (!token) {
         res.status(401).json({ message: 'No token, authorization denied'});

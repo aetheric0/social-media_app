@@ -30,8 +30,7 @@ const Profile = () => {
   const { user } = useUserContext();
   const { pathname } = useLocation();
 
-  const { data: userData, isPending } = useGetUserById(id || "");
-  const currentUser = userData?.data
+  const { data: currentUser, isPending } = useGetUserById(id || "");
 
   if (isPending)
     return (

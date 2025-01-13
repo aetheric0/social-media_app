@@ -10,7 +10,7 @@ const PostDetails = () => {
   const { id } = useParams()
   const {data: postData, isPending} = useGetPostById(id || '');
   const { user } = useUserContext();
-  const post = postData?.data.post;
+  const post = postData?.post;
 
   const handleDeletePost = () => {}
   

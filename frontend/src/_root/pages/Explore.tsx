@@ -12,7 +12,6 @@ const Explore = () => {
   const [searchValue, setSearchValue] = useState('');
   const debouncedValue = useDebounce(searchValue, 500);
   const { data: searchedPosts, isFetching: isSearchFetching} = useSearchPosts(debouncedValue);
-  const searchedPostsData = searchedPosts?.data;
 
   const posts = postsData?.pages.flatMap(page => page.posts) || [];
 
@@ -78,7 +77,7 @@ const Explore = () => {
         { shouldShowSearchResults ? (
           <SearchResults 
             isSearchFetching={isSearchFetching}
-            searchedPosts={searchedPostsData}
+            searchedPosts={searchedPosts}
           />
         ) : shouldShowPosts ? (
           <p className="text-light-4 mt-10 text-center w-full"> End of posts</p>
